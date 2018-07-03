@@ -1,0 +1,62 @@
+
+<div _show="table.showSearch" class="search">
+    <form class="form-inline">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <i class="fa fa-search"></i>
+                </div>
+                <input _elem="filter"
+                        placeholder="{{eText('SPKTables:search_Placeholder')}}"
+                        type="text" class="form-control" />
+            </div>
+        </div>
+    </form>
+</div>
+<div _hide="table.showSearch">
+    <span>&nbsp;</span><!-- Needed for some reason. Bug? -->
+</div>
+
+<$ _holder="beforeTable" />
+
+<div class="table_empty" _show="table.isEmpty">
+    {{eText('SPKTables:tableEmpty')}}
+</div>
+<div _hide="table.isEmpty"
+        class="table-responsive browse_table">
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr class="header">
+                <th _repeat="table.headers:header" _show="header.show" class="text-nowrap">
+                    <a _elem="header" href="">$header.title</a>&nbsp;
+                    <i _show="header.caretDown" class="fa fa-caret-down"></i>
+                    <i _show="header.caretUp" class="fa fa-caret-up"></i>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr _repeat="table.rows:row" _elem="row" class="$table.trClass $row.class">
+                <td _repeat="row.cols:col" _show="col.show">
+                    <a _show="row.href" href="#">
+                        <span>$col.html</span>
+                    </a>
+                    <div _hide="row.href">
+                        <span>$col.html</span>
+                    </div>
+                </td>
+            </tr>
+            <tr _show="table.showLoadMore" class="e-load-more">
+                <td _elem="loadMore" colspan="$table.colsLength"
+                        class="clickable" style="text-align: center;">
+                    <a href="#" style="font-size: 18pt; padding-top: 20px;">
+                        {{eText('SPKTables:loadMore')}}
+                        &nbsp;<i class="fa fa-caret-down" aria-hidden="true"></i>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="mg-clear"></div>
+
+<div _holder="afterTable"></div>
