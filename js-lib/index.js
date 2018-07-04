@@ -127,23 +127,23 @@ export class Table extends spocky.Module
                         hiddenColumnNames.includes(this._columnNames[j]);
             }
         }
+
+        return this;
     }
 
-    setOnClick(onClickFn)
+    setOnRowClick(onClickFn, rowHrefFn = null)
     {
-        js0.args(arguments, 'function');
+        js0.args(arguments, 'function', [ 'function', js0.Default ]);
 
-        this._listeners_OnClick = onClickFn;
-        for (let i = 0; i < this._rows.length; i++)
-
-    }
-
-    setRowHref(rowHrefFn)
-    {
-        js0.args(arguments, 'function');
-
+        this._listeners_OnClick = onClickFn;        
         this._rowHrefFn = rowHrefFn;
-        this.
+        
+        for (let i = 0; i < this._rows.length; i++) {
+            this.l.$fields.rows(i).href = rowHrefFn === null ? 
+                    '' : rowHrefFn(this._rows[i], this._columnIndexes);
+        }
+
+        return this;
     }
 
 
@@ -222,11 +222,16 @@ export class Table extends spocky.Module
                 });
             }
 
-            rows.push({
+            let row = {
                 href: null,
                 class: '',
-                cols: cols
-            });
+                cols: cols,
+            };
+
+            row.href = this._rowHrefFn === null ? null : this._rowHrefFn(row, 
+                    this._columnIndexes);
+
+            rows.push(row);
         }
 
         if (this._listeners_OnRefresh !== null) {

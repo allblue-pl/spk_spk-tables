@@ -19,11 +19,10 @@
 
 <$ _holder="beforeTable" />
 
-<div class="table_empty" _show="table.isEmpty">
+<div _show="table.isEmpty" class="table_empty">
     {{eText('SPKTables:tableEmpty')}}
 </div>
-<div _hide="table.isEmpty"
-        class="table-responsive browse_table">
+<div _hide="table.isEmpty" class="table-responsive browse_table">
     <table class="table table-hover table-striped">
         <thead>
             <tr class="header">
@@ -37,7 +36,7 @@
         <tbody>
             <tr _repeat="table.rows:row" _elem="row" class="$table.trClass $row.class">
                 <td _repeat="row.cols:col" _show="col.show">
-                    <a _show="row.href" href="#">
+                    <a _show="row.href" href="$row.href">
                         <span>$col.html</span>
                     </a>
                     <div _hide="row.href">
