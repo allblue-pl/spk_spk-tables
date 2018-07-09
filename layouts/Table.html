@@ -37,10 +37,10 @@
             <tr _repeat="table.rows:row" _elem="row" class="$table.trClass $row.class">
                 <td _repeat="row.cols:col" _show="col.show">
                     <a _show="row.href" href="$row.href">
-                        <span>$col.html</span>
+                        <span _field="col.html"></span>
                     </a>
                     <div _hide="row.href">
-                        <span>$col.html</span>
+                        <span _field="col.html"></span>
                     </div>
                 </td>
             </tr>

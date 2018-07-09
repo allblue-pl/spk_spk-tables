@@ -36,7 +36,7 @@ export class Table extends spocky.Module
         this._info = tableInfo;
 
         this._columnNames = [];
-        this._columnIndexes = {};
+        this._columnRefs = {};
         this._columnsOrder = [];
 
         this._rows = [];
@@ -51,7 +51,8 @@ export class Table extends spocky.Module
             step: 100,
         };
 
-        this._rowHrefFn = null;
+        this._fns_ApiFields = null;
+        this._fns_RowHref = null;
 
         this._listeners_OnApiResult = null;
         this._listeners_OnRefresh = null;
@@ -105,6 +106,15 @@ export class Table extends spocky.Module
         });
     }
 
+    setApiFields(apiFieldFn)
+    {
+        js0.args(arguments, 'function');
+
+        this._fns_ApiFields = apiFieldFn;
+
+        return this;
+    }
+
     setHiddenColumns(hiddenColumnNames)
     {
         js0.args(arguments, js0.Iterable('string'));
@@ -131,16 +141,34 @@ export class Table extends spocky.Module
         return this;
     }
 
+    setOnApiResult(onApiResultFn)
+    {
+        js0.args(arguments, 'function');
+
+        this._listeners_OnApiResult = onApiResultFn;
+
+        return this;
+    }    
+
+    setOnRefresh(onRefreshFn)
+    {
+        js0.args(arguments, 'function');
+
+        this._listeners_OnRefresh = onRefreshFn;
+
+        return this;
+    }
+
     setOnRowClick(onClickFn, rowHrefFn = null)
     {
         js0.args(arguments, 'function', [ 'function', js0.Default ]);
 
         this._listeners_OnClick = onClickFn;        
-        this._rowHrefFn = rowHrefFn;
+        this._fns_RowHref = rowHrefFn;
         
         for (let i = 0; i < this._rows.length; i++) {
             this.l.$fields.rows(i).href = rowHrefFn === null ? 
-                    '' : rowHrefFn(this._rows[i], this._columnIndexes);
+                    '' : rowHrefFn(this._rows[i], this._columnRefs);
         }
 
         return this;
@@ -160,8 +188,11 @@ export class Table extends spocky.Module
 
         fields.tableArgs = tableArgs;
 
-        for (let fieldName in this._apiFields)
-            fields[fieldName] = this._apiFields[fieldName];
+        if (this._fns_ApiFields !== null) {
+            let apiFields = this._fns_ApiFields();
+            for (let fieldName in apiFields)
+                fields[fieldName] = apiFields[fieldName];
+        }
 
         return fields;
     }
@@ -184,9 +215,9 @@ export class Table extends spocky.Module
     _parseInfo()
     {
         this._columnNames = this._info.columns.map((item) => { return item.name });
-        this._columnIndexes = {};
+        this._columnRefs = {};
         for (let i = 0; i < this._columnNames.length; i++)
-            this._columnIndexes[this._columnNames[i]] = i;
+            this._columnRefs[this._columnNames[i]] = i;
 
         this._columnsOrder = [];
         for (let col of this._info.columns) {
@@ -194,7 +225,7 @@ export class Table extends spocky.Module
             if (orderByInfo === null)
                 continue;
 
-            this._columnsOrder.push([ this._columnIndexes[col.name], 
+            this._columnsOrder.push([ this._columnRefs[col.name], 
                     orderByInfo[1], orderByInfo[0] ]);
         }
 
@@ -228,22 +259,14 @@ export class Table extends spocky.Module
                 cols: cols,
             };
 
-            row.href = this._rowHrefFn === null ? null : this._rowHrefFn(row, 
-                    this._columnIndexes);
+            row.href = this._fns_RowHref === null ? null : this._fns_RowHref(row, 
+                    this._columnRefs);
 
             rows.push(row);
         }
 
-        if (this._listeners_OnRefresh !== null) {
-            let columns = {};
-            let i = 0;
-            for (let columnName in this._info.columns) {
-                columns[columnName] = i;
-                i++;
-            }
-
-            this._listeners_OnRefresh(rows, columns);
-        }
+        if (this._listeners_OnRefresh !== null)
+            this._listeners_OnRefresh(rows, this._columnRefs);
 
         return rows;
     }
@@ -286,7 +309,7 @@ export class Table extends spocky.Module
         if (this._dynamic)
             return rows;
 
-        let columnIndex = this._columnIndexes[this._info.orderBy.columnName];
+        let columnIndex = this._columnRefs[this._info.orderBy.columnName];
 
         return rows.sort((a, b) => {
             let result = this._rows_Sort_Column(a, b, columnIndex,
