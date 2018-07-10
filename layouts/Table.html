@@ -7,7 +7,7 @@
                     <i class="fa fa-search"></i>
                 </div>
                 <input _elem="filter"
-                        placeholder="{{eText('SPKTables:search_Placeholder')}}"
+                        placeholder="$text('search_Placeholder')"
                         type="text" class="form-control" />
             </div>
         </div>
@@ -20,13 +20,13 @@
 <$ _holder="beforeTable" />
 
 <div _show="table.isEmpty" class="table_empty">
-    {{eText('SPKTables:tableEmpty')}}
+    $text('tableEmpty')
 </div>
 <div _hide="table.isEmpty" class="table-responsive browse_table">
     <table class="table">
         <thead>
             <tr class="header">
-                <th _repeat="table.headers:header" _show="header.show" class="text-nowrap">
+                <th _repeat="table.headers:header" _show="header.show" class="text-nowrap $header.class">
                     <a _elem="header" href="">$header.title</a>&nbsp;
                     <i _show="header.caretDown" class="fa fa-caret-down"></i>
                     <i _show="header.caretUp" class="fa fa-caret-up"></i>
@@ -35,7 +35,7 @@
         </thead>
         <tbody>
             <tr _repeat="table.rows:row" _elem="row" class="$table.trClass $row.class">
-                <td _repeat="row.cols:col" _show="col.show">
+                <td _repeat="row.cols:col" _show="col.show" class="$col.class">
                     <a _show="row.href" href="$row.href">
                         <span _field="col.html"></span>
                     </a>
