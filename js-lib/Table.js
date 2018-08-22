@@ -33,7 +33,7 @@ export default class Table extends spocky.Module
                     reverse: [ 'boolean', js0.Default(false) ],
                 }), js0.Default({ priority: 0, reverse: false }) ],
             })),
-            apiUri: 'string',
+            apiUri: [ 'string', js0.Null ],
             orderBy: js0.Preset({
                 columnName: 'string',
                 reverse: [ 'boolean', js0.Default(false) ],
@@ -191,6 +191,14 @@ export default class Table extends spocky.Module
         this.l.$fields.table.showSearch = true;
 
         return this;
+    }
+
+    update(tableData)
+    {
+        let rows = this._parseResultRows(tableData);
+
+        this._rows = this._rows_Sort(rows);
+        this._rows_Update(this._rows_Filter(this._rows));
     }
 
 
