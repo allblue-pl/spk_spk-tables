@@ -153,6 +153,19 @@ export default class Table extends spocky.Module
         return this;
     }
 
+    setLimit(start, step)
+    {
+        js0.args(arguments, 'number', 'number');
+
+        this._limit = {
+            start: start,
+            current: start,
+            step: step,
+        };
+
+        return this;
+    }
+
     setOnApiResult(onApiResultFn)
     {
         js0.args(arguments, 'function');
