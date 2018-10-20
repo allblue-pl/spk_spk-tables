@@ -11,9 +11,9 @@
         </div>
     </form>
 </div>
-<div _hide="table.showSearch">
-    <span>&nbsp;</span><!-- Needed for some reason. Bug? -->
-</div>
+<!-- <div _hide="table.showSearch"> -->
+    <!-- <span>&nbsp;</span>Needed for some reason. Bug? -->
+<!-- </div> -->
 
 <$ _holder="beforeTable" />
 
@@ -32,7 +32,8 @@
             </tr>
         </thead>
         <tbody>
-            <tr _repeat="table.rows:row" _elem="row" class="$table.trClass $row.class">
+            <tr _repeat="table.rows:row" _elem="row" class="$table.trClass $row.class" 
+                    style="$row.style">
                 <td _repeat="row.cols:col" _show="col.show" class="$col.class">
                     <a _show="row.href" href="$row.href">
                         <span _field="col.html"></span>
@@ -42,6 +43,7 @@
                     </div>
                 </td>
             </tr>
+
             <tr _show="table.showLoadMore" class="e-load-more">
                 <td _elem="loadMore" colspan="$table.colsLength"
                         class="clickable" style="text-align: center;">

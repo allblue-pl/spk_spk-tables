@@ -50,6 +50,7 @@ export default class Table extends spocky.Module
         this._columnsOrder = [];
 
         this._rows = [];
+        this._rows_Filtered = [];
         this._filter = {
             value: '',
             current: '',
@@ -218,6 +219,7 @@ export default class Table extends spocky.Module
     _createElems()
     {
         this._createElems_Filter();
+        this._createElems_Rows();
     }
 
     _createElems_Filter()
@@ -258,6 +260,19 @@ export default class Table extends spocky.Module
         this.l.$elems.filter.addEventListener('keydown', (evt) => {
             if (evt.keyCode === 13)
                 evt.preventDefault();
+        });
+    }
+
+    _createElems_Rows()
+    {
+        this.l.$elems.row((elem, keys) => {
+            elem.addEventListener('click', (evt) => {
+                if (this._listeners_OnClick === null)
+                    return;
+
+                evt.preventDefault();
+                this._listeners_OnClick(this._rows_Filtered[keys[0]], this.columnRefs);
+            })
         });
     }
 
@@ -360,6 +375,7 @@ export default class Table extends spocky.Module
                 href: null,
                 class: '',
                 cols: cols,
+                style: this._listeners_OnClick === null ? '' : 'cursor: pointer',
             };
 
             row.href = this._fns_RowHref === null ? null : this._fns_RowHref(row, 
@@ -484,6 +500,8 @@ export default class Table extends spocky.Module
             tRows = rows;
         else
             tRows = rows.slice(0, this._limit.current);
+
+        this._rows_Filtered = tRows;
 
         this.l.$fields.table = {
             rows: tRows,
