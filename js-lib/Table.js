@@ -35,7 +35,7 @@ export default class Table extends spocky.Module
             })),
             apiUri: [ 'string', js0.Null ],
             orderBy: js0.Preset({
-                columnName: 'string',
+                columnName: [ 'string', js0.Null ],
                 reverse: [ 'boolean', js0.Default(false) ],
             }),
             hiddenColumnNames: [ js0.Iterable('string'), js0.Default([]) ],
@@ -426,6 +426,9 @@ export default class Table extends spocky.Module
     _rows_Sort(rows)
     {
         if (this._dynamic)
+            return rows;
+
+        if (this._info.orderBy.columnName === null)
             return rows;
 
         let columnIndex = this._columnRefs[this._info.orderBy.columnName];
