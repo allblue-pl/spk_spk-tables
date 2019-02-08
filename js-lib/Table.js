@@ -60,9 +60,9 @@ export default class Table extends spocky.Module
             timeoutId: null
         };
         this._limit = {
-            start: 2,
-            current: 2,
-            step: 4,
+            start: 50,
+            current: 50,
+            step: 100,
         };
 
         this._fns_ApiFields = null;
