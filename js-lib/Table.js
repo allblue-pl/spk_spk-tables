@@ -60,9 +60,9 @@ export default class Table extends spocky.Module
             timeoutId: null
         };
         this._limit = {
-            start: 50,
-            current: 50,
-            step: 100,
+            start: 2,
+            current: 2,
+            step: 4,
         };
 
         this._fns_ApiFields = null;
@@ -295,7 +295,7 @@ export default class Table extends spocky.Module
                     return;
 
                 evt.preventDefault();
-                this._listeners_OnClick(this._rows_Filtered[keys[0]], this.columnRefs);
+                this._listeners_OnClick(this._rows_Current[keys[0]], this.columnRefs);
             })
         });
     }
