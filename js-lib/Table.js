@@ -557,8 +557,6 @@ export default class Table extends spocky.Module
 
         let fields = this._getFields(update);
 
-        console.log(fields);
-
         this.msgs.showLoading();
 
         webABApi.json(this._info.apiUri, fields, (result) => {
