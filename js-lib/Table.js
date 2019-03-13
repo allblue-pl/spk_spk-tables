@@ -69,6 +69,7 @@ export default class Table extends spocky.Module
         this._fns_RowHref = null;
 
         this._listeners_OnApiResult = null;
+        this._listeners_OnClick = null;
         this._listeners_OnRefresh = null;
 
         this.l = new $layouts.Table();
