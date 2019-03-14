@@ -81,6 +81,14 @@ export default class Table extends spocky.Module
         this.$view = this.l;
     }
 
+    addHiddenColumns(hiddenColumnNames)
+    {
+        js0.args(arguments, Array);
+
+        hiddenColumnNames = this._info.hiddenColumnNames.concat(hiddenColumnNames);        
+        this.setHiddenColumns(hiddenColumnNames);
+    }
+
     refresh()
     {
         this._limit.current = this._limit.start;        
@@ -110,22 +118,22 @@ export default class Table extends spocky.Module
     {
         js0.args(arguments, js0.Iterable('string'));
 
-        for (let colName in hiddenColumnNames) {
-            if (!this.columnNames.includes(colName))
-                throw new Error(`Column 'colName' does not exist in table.`);
+        for (let colName of hiddenColumnNames) {
+            if (!this._columnNames.includes(colName))
+                throw new Error(`Column '${colName}' does not exist in table.`);
         }
 
-        this._info.hiddenColumns = hiddenColumns;
+        this._info.hiddenColumnNames = hiddenColumnNames;
 
         for (let i = 0; i < this._columnNames.length; i++) {
             this.l.$fields.table.headers(i).show = 
-                    hiddenColumnNames.includes(this._columnNames[i]);
+                    !hiddenColumnNames.includes(this._columnNames[i]);
         }
 
         for (let i = 0; i < this._rows.length; i++) {
             for (let j = 0; j < this._columnNames.length; j++) {
-                this.l.$fields.rows(i).cols(j).show = 
-                        hiddenColumnNames.includes(this._columnNames[j]);
+                this.l.$fields.table.rows(i).cols(j).show = 
+                        !hiddenColumnNames.includes(this._columnNames[j]);
             }
         }
 
