@@ -96,11 +96,11 @@ export default class Table extends spocky.Module
         this._rows_Refresh(false);
     }
 
-    setApiFields(apiFieldFn)
+    setApiFields(apiFieldsFn)
     {
         js0.args(arguments, 'function');
 
-        this._fns_ApiFields = apiFieldFn;
+        this._fns_ApiFields = apiFieldsFn;
 
         return this;
     }
@@ -431,7 +431,8 @@ export default class Table extends spocky.Module
         if (this._filter.value === '')
             return rows;
 
-        let filterString = this._rows_Filter_FormatString(this._filter.value);
+        let filterString = abStrings.escapeRegExpChars(
+                this._rows_Filter_FormatString(this._filter.value));
 
         let regexp = new RegExp('.*' + filterString + '.*');
 
@@ -440,6 +441,8 @@ export default class Table extends spocky.Module
             for (let j = 0; j < rows[i].cols.length; j++) {
                 let colString = this._rows_Filter_FormatString(
                         String(rows[i].cols[j].value));
+
+                console.log(colString);
 
                 if (colString.match(regexp)) {
                     fRows.push(rows[i]);
