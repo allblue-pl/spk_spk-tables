@@ -1,0 +1,52 @@
+/* Tables */
+table {
+	@extend .table-hover;
+	a {
+		color: $gray-600;
+	}
+	a:hover {
+		color: #000;
+	}
+	thead {
+		background-color: $primary;
+		color: #fff;
+
+		a {
+			color: #fff;
+			font-weight: normal!important;
+		}
+		a:hover {
+			color: $gray-300;
+		}
+	}
+	tr {
+		td.narrow {
+			input {
+				width: 40px;
+				text-align: center;
+			}
+		}
+	}
+}
+
+/* calnedar */
+.input-group {
+	table {
+		text-shadow: none!important;
+		th {
+			border-radius: 0px;
+		}
+		th:hover {
+			background-color: darken($primary, 5%)!important;
+		}
+		td.active {
+			background-color: $lb-blue-light;
+			color: #000;
+			text-shadow: none;
+		}
+		td.active:hover {
+			background-color: darken($lb-blue-light, 10%);
+			color: #fff;
+		}
+	}
+}
