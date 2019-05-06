@@ -17,13 +17,16 @@
 
 <$ _holder="beforeTable" />
 
-<div _show="table.isEmpty" class="table_empty px-5 pb-5">
+<div _show="table.isEmpty" class="table_empty pb-5">
     $text('tableEmpty')
 </div>
 <div _hide="table.isEmpty" class="table-responsive browse_table">
     <table class="table">
         <thead>
             <tr class="header">
+                <th _elem="selectable_TableCheckboxHolder" _show="table.selectable">
+                    <input _elem="selectable_TableCheckbox" type="checkbox" />
+                </th>
                 <th _repeat="table.headers:header" _show="header.show" class="text-nowrap $header.class">
                     <a _elem="header" href=""><span _field="header.title" /></a>&nbsp;
                     <i _show="header.caretDown" class="fa fa-caret-down"></i>
@@ -34,6 +37,10 @@
         <tbody>
             <tr _repeat="table.rows:row" _elem="row" class="$table.trClass $row.class" 
                     style="$row.style">
+                <td _elem="selectable_RowCheckboxHolder" _show="table.selectable">
+                    <input _show="row.selected" type="checkbox" checked="" />
+                    <input _hide="row.selected" type="checkbox" />
+                </td>
                 <td _repeat="row.cols:col" _show="col.show" class="$col.class">
                     <a _show="row.href" href="$row.href">
                         <span _field="col.html"></span>

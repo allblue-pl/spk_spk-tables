@@ -89,6 +89,11 @@ export default class Table extends spocky.Module
         this.setHiddenColumns(hiddenColumnNames);
     }
 
+    getSelectedRows()
+    {
+
+    }
+
     refresh()
     {
         this._limit.current = this._limit.start;        
@@ -186,6 +191,13 @@ export default class Table extends spocky.Module
         return this;
     }
 
+    setSelectable(selectable)
+    {
+        this.l.$fields.table.selectable = selectable ? true : false;
+
+        return this;
+    }
+
     setShowSearch(showSearch)
     {
         this.l.$fields.table.showSearch = true;
@@ -208,6 +220,7 @@ export default class Table extends spocky.Module
         this._createElems_Header();
         this._createElems_LoadMore();
         this._createElems_Rows();
+        this._createElems_Selectable();
     }
 
     _createElems_Filter()
@@ -306,6 +319,36 @@ export default class Table extends spocky.Module
                 evt.preventDefault();
                 this._listeners_OnClick(this._rows_Current[keys[0]], this.columnRefs);
             })
+        });
+    }
+
+    _createElems_Selectable()
+    {
+        this.l.$elems.selectable_TableCheckboxHolder.addEventListener('click', (evt) => {
+            evt.stopPropagation();
+
+            let val = !this.l.$elems.selectable_TableCheckbox.checked;
+
+            this.l.$elems.selectable_TableCheckbox.checked = val;
+
+            for (let i = 0; i < this.l.$fields.table.rows().$size; i++) {
+                this.l.$fields.table.rows(i).selected = val;
+            }
+        });
+
+        this.l.$elems.selectable_RowCheckboxHolder((elem, keys) => {
+            elem.addEventListener('click', (evt) => {
+                evt.preventDefault();
+                evt.stopPropagation();
+
+                let val = !this.l.$fields.table.rows(keys[0]).selected;
+
+                this.l.$fields.table.rows(keys[0]).selected = val;
+                        
+
+                if (!val)
+                    this.l.$elems.selectable_TableCheckbox.checked = false;
+            });
         });
     }
 
