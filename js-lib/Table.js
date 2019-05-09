@@ -303,9 +303,9 @@ export default class Table extends spocky.Module
             this._limit.current += this._limit.step;
 
             if (this._dynamic)
-                this._rows_Refresh(true);
+                this._rows_Refresh(true, false);
             else
-                this._rows_Update(this._rows_Current);
+                this._rows_Update(this._rows_Current, false);
         });
     }
 
@@ -485,8 +485,6 @@ export default class Table extends spocky.Module
                 let colString = this._rows_Filter_FormatString(
                         String(rows[i].cols[j].value));
 
-                console.log(colString);
-
                 if (colString.match(regexp)) {
                     fRows.push(rows[i]);
                     break;
@@ -575,7 +573,7 @@ export default class Table extends spocky.Module
             return a_value.localeCompare(b_value);
     }
 
-    _rows_Update(rows)
+    _rows_Update(rows, clearAll = true)
     {
         /* Header */
         let orderBy_ColumnIndex = this._columnRefs[this._info.orderBy.columnName];
@@ -588,25 +586,30 @@ export default class Table extends spocky.Module
                 this.l.$fields.table.headers(i).caretUp = this._info.orderBy.reverse;
             }
         }
+
+        // if (clearAll)
+        //     this.l.$fields.table.rows = [];
         /* / Header */
 
-        /* Rows */
-        let tRows;
-        if (this._dynamic)
-            tRows = rows;
-        else
-            tRows = rows.slice(0, this._limit.current);
+        setTimeout(() => {
+            /* Rows */
+            let tRows;
+            if (this._dynamic)
+                tRows = rows;
+            else
+                tRows = rows.slice(0, this._limit.current);
 
-        this.l.$fields.table = {
-            rows: tRows,
-            isEmpty: rows.length === 0,
-            showLoadMore: rows.length >= this._limit.current,
-            colsLength: tRows.length === 0 ? 0 : tRows[0].cols.length,
-        };
-        /* / Rows */
+            this.l.$fields.table = {
+                rows: tRows,
+                isEmpty: rows.length === 0,
+                showLoadMore: rows.length >= this._limit.current,
+                colsLength: tRows.length === 0 ? 0 : tRows[0].cols.length,
+            };
+            /* / Rows */
+        }, 10);
     }
 
-    _rows_Refresh(update = false)
+    _rows_Refresh(update = false, clearAll = true)
     {
         update = this._dynamic ? update : false;
 
@@ -635,7 +638,7 @@ export default class Table extends spocky.Module
                     this._rows_Current = this._rows_Filter(this._rows);
                 }
 
-                this._rows_Update(this._rows_Current);
+                this._rows_Update(this._rows_Current, clearAll);
             } else {
                 // this.rows_Update(this.rows);
 

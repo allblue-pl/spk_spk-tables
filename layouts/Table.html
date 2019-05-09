@@ -27,8 +27,8 @@
                 <th _elem="selectable_TableCheckboxHolder" _show="table.selectable">
                     <input _elem="selectable_TableCheckbox" type="checkbox" />
                 </th>
-                <th _repeat="table.headers:header" _show="header.show" class="text-nowrap $header.class">
-                    <a _elem="header" href=""><span _field="header.title" /></a>&nbsp;
+                <th _repeat="table.headers:header" _elem="header" _show="header.show" class="text-nowrap $header.class">
+                    <a href=""><span _field="header.title" /></a>&nbsp;
                     <i _show="header.caretDown" class="fa fa-caret-down"></i>
                     <i _show="header.caretUp" class="fa fa-caret-up"></i>
                 </th>
