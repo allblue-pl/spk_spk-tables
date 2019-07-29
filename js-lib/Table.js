@@ -91,7 +91,18 @@ export default class Table extends spocky.Module
 
     getSelectedRows()
     {
+        let rows_Selected = [];
+        for (let row of this._rows_Current) {
+            if (row.selected) {
+                let row_Selected = {};
+                for (let i = 0; i < row.cols.length; i++)
+                    row_Selected[this._columnNames[i]] = row.cols[i].value;
 
+                rows_Selected.push(row_Selected);
+            }
+        }
+
+        return rows_Selected;
     }
 
     refresh()
@@ -175,6 +186,15 @@ export default class Table extends spocky.Module
 
         return this;
     }
+
+    // setOnRefreshRow(onRefreshRowFn)
+    // {
+    //     js0.args(arguments, 'function');
+
+    //     this._listeners_OnRefreshRow = onRefreshRowFn;
+
+    //     return this;
+    // }
 
     setOnRowClick(onClickFn, rowHrefFn = null)
     {
@@ -324,16 +344,26 @@ export default class Table extends spocky.Module
 
     _createElems_Selectable()
     {
-        this.l.$elems.selectable_TableCheckboxHolder.addEventListener('click', (evt) => {
-            evt.stopPropagation();
-
-            let val = !this.l.$elems.selectable_TableCheckbox.checked;
-
+        let selectAll = (val) => {
             this.l.$elems.selectable_TableCheckbox.checked = val;
 
             for (let i = 0; i < this.l.$fields.table.rows().$size; i++) {
+                this._rows_Current[i].selected = val;
                 this.l.$fields.table.rows(i).selected = val;
             }
+        }
+
+        this.l.$elems.selectable_TableCheckbox.addEventListener('click', (evt) => {
+            evt.stopPropagation();
+
+            selectAll(evt.target.checked);
+        });
+
+        this.l.$elems.selectable_TableCheckboxHolder.addEventListener('click', (evt) => {
+            evt.preventDefault();
+            evt.stopPropagation();
+
+            selectAll(!this.l.$elems.selectable_TableCheckbox.checked);            
         });
 
         this.l.$elems.selectable_RowCheckboxHolder((elem, keys) => {
@@ -343,9 +373,9 @@ export default class Table extends spocky.Module
 
                 let val = !this.l.$fields.table.rows(keys[0]).selected;
 
+                this._rows_Current[keys[0]].selected = val;
                 this.l.$fields.table.rows(keys[0]).selected = val;
                         
-
                 if (!val)
                     this.l.$elems.selectable_TableCheckbox.checked = false;
             });
@@ -429,6 +459,7 @@ export default class Table extends spocky.Module
                 show: !this._info.hiddenColumnNames.includes(col.name),
                 caretDown: false,
                 caretUp: false,
+                class: '',
             });
         }
     }
@@ -452,6 +483,7 @@ export default class Table extends spocky.Module
                 class: '',
                 cols: cols,
                 style: this._listeners_OnClick === null ? '' : 'cursor: pointer',
+                selected: false,
             };
 
             row.href = this._fns_RowHref === null ? null : this._fns_RowHref(row, 
@@ -605,7 +637,7 @@ export default class Table extends spocky.Module
                 showLoadMore: rows.length >= this._limit.current,
                 colsLength: tRows.length === 0 ? 0 : tRows[0].cols.length,
             };
-            /* / Rows */
+            /* / Rows */ 
         }, 10);
     }
 
