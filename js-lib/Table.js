@@ -28,6 +28,9 @@ export default class Table extends spocky.Module
             columns: js0.Iterable(js0.Preset({
                 name: 'string',
                 header: 'string',
+                class: [ 'string', js0.Default('') ],
+                style: [ 'string', js0.Default('') ],
+                textStyle: [ 'string', js0.Default('') ],
                 orderBy: [ js0.Preset({
                     priority: 'number',
                     reverse: [ 'boolean', js0.Default(false) ],
@@ -202,10 +205,10 @@ export default class Table extends spocky.Module
 
         this._listeners_OnClick = onClickFn;        
         this._fns_RowHref = rowHrefFn;
-        
-        for (let i = 0; i < this._rows.length; i++) {
+
+        for (let i = 0; i < this._rows_Current.length; i++) {
             this.l.$fields.rows(i).href = rowHrefFn === null ? 
-                    '' : rowHrefFn(this._rows[i], this._columnRefs);
+                    '' : rowHrefFn(this._rows_Current[i], this._columnRefs);
         }
 
         return this;
@@ -230,7 +233,8 @@ export default class Table extends spocky.Module
         let rows = this._parseResultRows(tableData);
 
         this._rows = this._rows_Sort(rows);
-        this._rows_Update(this._rows_Filter(this._rows));
+        this._rows_Current = this._rows_Filter(this._rows);
+        this._rows_Update(this._rows_Current);
     }
 
 
@@ -337,6 +341,8 @@ export default class Table extends spocky.Module
                     return;
 
                 evt.preventDefault();
+
+                console.log(this._rows_Current);
                 this._listeners_OnClick(this._rows_Current[keys[0]], this.columnRefs);
             })
         });
@@ -459,7 +465,9 @@ export default class Table extends spocky.Module
                 show: !this._info.hiddenColumnNames.includes(col.name),
                 caretDown: false,
                 caretUp: false,
-                class: '',
+                class: col.class,
+                style: col.style,
+                textStyle: col.textStyle,
             });
         }
     }
