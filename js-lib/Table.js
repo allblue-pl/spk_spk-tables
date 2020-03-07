@@ -342,7 +342,6 @@ export default class Table extends spocky.Module
 
                 evt.preventDefault();
 
-                console.log(this._rows_Current);
                 this._listeners_OnClick(this._rows_Current[keys[0]], this.columnRefs);
             })
         });
