@@ -214,6 +214,16 @@ export default class Table extends spocky.Module
         return this;
     }
 
+    setOrderBy(columnName, reverse = false)
+    {
+        js0.args(arguments, 'string', [ 'boolean', js0.Default ]);
+
+        this._info.orderBy.columnName = columnName
+        this._info.orderBy.reverse = reverse;
+
+        return this;
+    }
+
     setSelectable(selectable)
     {
         this.l.$fields.table.selectable = selectable ? true : false;
@@ -389,6 +399,7 @@ export default class Table extends spocky.Module
 
     _createFields()
     {
+        this.l.$fields.table.trClass = '';
         this.l.$fields.text = (text) => {
             if (!(text in spkTables.texts))
                 return `#${text}#`;
