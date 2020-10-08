@@ -37,6 +37,7 @@ export default class Table extends spocky.Module
                 }), js0.Default({ priority: 0, reverse: false }) ],
             })),
             apiUri: [ 'string', js0.Null ],
+            fn: [ 'function', js0.Null ],
             orderBy: js0.Preset({
                 columnName: [ 'string', js0.Null ],
                 reverse: [ 'boolean', js0.Default(false) ],
@@ -593,6 +594,16 @@ export default class Table extends spocky.Module
         if (b_value === null)
             return (!reverse ? 1 : -1);
 
+        /* BigInt */
+        if (typeof(a_value) === 'bigint' || typeof(b_value) === 'bigint') {
+            if (b_value > a_value)
+                return -1;
+            if (a_value > a_value)
+                return 1;
+
+            return 0;
+        }
+
         /* Number */
         if (!isNaN(parseFloat(a_value)) && isFinite(a_value) &&
                 !isNaN(parseFloat(b_value)) && isFinite(b_value)) {
@@ -667,40 +678,61 @@ export default class Table extends spocky.Module
 
         this.msgs.showLoading();
 
-        webABApi.json(this._info.apiUri, fields, (result) => {
-            if (result.isSuccess()) {
-                if (!('table' in result.data)) {
-                    console.error('Table refresh result:', result.data);
-                    throw new Error('No `table` in result from: ' + 
-                            this._info.apiUri);
+        if (this._info.fn !== null) {
+            this._info.fn(fields)
+                .then((data) => {
+                    console.log(data);
+
+                    this._rows_Refresh_Process(update, clearAll, data);
+
+                    this.msgs.hideLoading();
+                })
+                .catch((e) => {
+                    console.error(e);
+                });
+        } else if (this._info.apiUri !== null) {
+            webABApi.json(this._info.apiUri, fields, (result) => {
+                if (result.isSuccess())
+                    this._rows_Refresh_Process(update, clearAll, result.data);
+                else {
+                    // this.rows_Update(this.rows);
+    
+                    this.msgs.showMessage_Failure(result.data.message);
                 }
+    
+                // this.$layout.$elems.each('select', function(elem) {
+                //     elem.checked = false;
+                // });
+    
+                this.msgs.hideLoading();
+            });
+        } else
+            throw new Error('No data source set.');
 
-                if (this._listeners_OnApiResult !== null)
-                    this._listeners_OnApiResult(result.data);
+        
+    }
 
-                let rows_ApiResult = this._parseResultRows(result.data.table);
-                    
-                if (update) {
-                    this._rows = this._rows.concat(rows_ApiResult);                    
-                    this._rows_Current = this._rows;
-                } else {
-                    this._rows = this._rows_Sort(rows_ApiResult);
-                    this._rows_Current = this._rows_Filter(this._rows);
-                }
+    _rows_Refresh_Process(update, clearAll, data)
+    {
+        if (!('table' in data)) {
+            console.error('Table refresh result:', data);
+            throw new Error('No `table` in data.');
+        }
 
-                this._rows_Update(this._rows_Current, clearAll);
-            } else {
-                // this.rows_Update(this.rows);
+        if (this._listeners_OnApiResult !== null)
+            this._listeners_OnApiResult(data);
 
-                this.msgs.showMessage_Failure(result.data.message);
-            }
+        let rows_ApiResult = this._parseResultRows(data.table);
+            
+        if (update) {
+            this._rows = this._rows.concat(rows_ApiResult);                    
+            this._rows_Current = this._rows;
+        } else {
+            this._rows = this._rows_Sort(rows_ApiResult);
+            this._rows_Current = this._rows_Filter(this._rows);
+        }
 
-            // this.$layout.$elems.each('select', function(elem) {
-            //     elem.checked = false;
-            // });
-
-            this.msgs.hideLoading();
-        });
+        this._rows_Update(this._rows_Current, clearAll);
     }
 
 }
