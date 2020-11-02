@@ -24,7 +24,11 @@ export default class Table extends spocky.Module
 
     constructor(msgs, tableInfo)
     { super();
-        js0.args(arguments, spkMessages.Messages, js0.Preset({
+        js0.args(arguments, spkMessages.Messages, js0.RawObject);
+
+        tableInfo = js0.copyObject(tableInfo);
+
+        js0.typeE(tableInfo, js0.Preset({
             columns: js0.Iterable(js0.Preset({
                 name: 'string',
                 header: 'string',
@@ -202,7 +206,7 @@ export default class Table extends spocky.Module
 
     setOnRowClick(onClickFn, rowHrefFn = null)
     {
-        js0.args(arguments, 'function', [ 'function', js0.Default ]);
+        js0.args(arguments, [ 'function', js0.Null ], [ 'function', js0.Default ]);
 
         this._listeners_OnClick = onClickFn;        
         this._fns_RowHref = rowHrefFn;
@@ -234,7 +238,9 @@ export default class Table extends spocky.Module
 
     setShowSearch(showSearch)
     {
-        this.l.$fields.table.showSearch = true;
+        this.l.$fields.table.showSearch = showSearch;
+
+        console.log(showSearch);
 
         return this;
     }
@@ -559,6 +565,11 @@ export default class Table extends spocky.Module
         if (this._info.orderBy.columnName === null)
             return rows;
 
+        if (!(this._info.orderBy.columnName in this._columnRefs)) {
+            throw new Error(`Order by column '${this._info.orderBy.columnName}'` +
+                ` does not exist.`);
+        }
+        
         let columnIndex = this._columnRefs[this._info.orderBy.columnName];
 
         return rows.sort((a, b) => {
@@ -680,15 +691,21 @@ export default class Table extends spocky.Module
 
         if (this._info.fn !== null) {
             this._info.fn(fields)
-                .then((data) => {
-                    console.log(data);
+                .then((result) => {
+                    console.log('Test', result);
 
-                    this._rows_Refresh_Process(update, clearAll, data);
+                    if (result.success)
+                        this._rows_Refresh_Process(update, clearAll, result.data);
+                    else
+                        this.msgs.showMessage_Failure(result.data.message);
 
                     this.msgs.hideLoading();
                 })
                 .catch((e) => {
                     console.error(e);
+
+                    this.msgs.hideLoading();
+                    this.msgs.showMessage_Failure(e);
                 });
         } else if (this._info.apiUri !== null) {
             webABApi.json(this._info.apiUri, fields, (result) => {
