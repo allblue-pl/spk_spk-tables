@@ -240,8 +240,6 @@ export default class Table extends spocky.Module
     {
         this.l.$fields.table.showSearch = showSearch;
 
-        console.log(showSearch);
-
         return this;
     }
 
@@ -692,8 +690,6 @@ export default class Table extends spocky.Module
         if (this._info.fn !== null) {
             this._info.fn(fields)
                 .then((result) => {
-                    console.log('Test', result);
-
                     if (result.success)
                         this._rows_Refresh_Process(update, clearAll, result.data);
                     else
