@@ -31,6 +31,7 @@ export default class Table extends spocky.Module
         js0.typeE(tableInfo, js0.Preset({
             columns: js0.Iterable(js0.Preset({
                 name: 'string',
+                refColumnName: [ 'string', js0.Null, js0.Default(Table.NotSet) ],
                 header: 'string',
                 class: [ 'string', js0.Default('') ],
                 style: [ 'string', js0.Default('') ],
@@ -48,6 +49,11 @@ export default class Table extends spocky.Module
             }),
             hiddenColumnNames: [ js0.Iterable('string'), js0.Default([]) ],
         }));
+
+        for (let column of tableInfo.columns) {
+            if (column.refColumnName === Table.NotSet)
+                column.refColumnName = column.name;
+        }
 
         this.msgs = msgs;
 
@@ -749,3 +755,5 @@ export default class Table extends spocky.Module
     }
 
 }
+
+Table.NotSet = Symbol('spkTables_NotSet');
