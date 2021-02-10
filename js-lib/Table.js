@@ -707,7 +707,7 @@ export default class Table extends spocky.Module
                     console.error(e);
 
                     this.msgs.hideLoading();
-                    this.msgs.showMessage_Failure(e);
+                    this.msgs.showMessage_Failure(e.toString());
                 });
         } else if (this._info.apiUri !== null) {
             webABApi.json(this._info.apiUri, fields, (result) => {
