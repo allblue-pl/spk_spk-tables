@@ -697,7 +697,7 @@ export default class Table extends spocky.Module
             this._info.fn(fields)
                 .then((result) => {
                     if (result.success)
-                        this._rows_Refresh_Process(update, clearAll, result.data);
+                        this._rows_Refresh_Process(update, clearAll, result.data, fields);
                     else
                         this.msgs.showMessage_Failure(result.data.message);
 
@@ -712,7 +712,7 @@ export default class Table extends spocky.Module
         } else if (this._info.apiUri !== null) {
             webABApi.json(this._info.apiUri, fields, (result) => {
                 if (result.isSuccess())
-                    this._rows_Refresh_Process(update, clearAll, result.data);
+                    this._rows_Refresh_Process(update, clearAll, result.data, fields);
                 else {
                     // this.rows_Update(this.rows);
     
@@ -731,7 +731,7 @@ export default class Table extends spocky.Module
         
     }
 
-    _rows_Refresh_Process(update, clearAll, data)
+    _rows_Refresh_Process(update, clearAll, data, apiFields)
     {
         if (!('table' in data)) {
             console.error('Table refresh result:', data);
@@ -739,7 +739,7 @@ export default class Table extends spocky.Module
         }
 
         if (this._listeners_OnApiResult !== null)
-            this._listeners_OnApiResult(data);
+            this._listeners_OnApiResult(data, apiFields);
 
         let rows_ApiResult = this._parseResultRows(data.table);
             
