@@ -126,6 +126,16 @@ export default class Table extends spocky.Module
         this._rows_Refresh(false);
     }
 
+    removeHiddenColumns(hiddenColumnNames)
+    {
+        js0.args(arguments, Array);
+
+        hiddenColumnNames = this._info.hiddenColumnNames.filter((el) => {
+            return hiddenColumnNames.indexOf(el) < 0;
+        });
+        this.setHiddenColumns(hiddenColumnNames);
+    }
+
     setApiFields(apiFieldsFn)
     {
         js0.args(arguments, 'function');
