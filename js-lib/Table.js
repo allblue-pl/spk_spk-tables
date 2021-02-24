@@ -68,6 +68,8 @@ export default class Table extends spocky.Module
         this._rows = [];
         this._rows_Current = [];
 
+        this._noSort = false;
+
         this._filter = {
             value: '',
             current: '',
@@ -193,6 +195,15 @@ export default class Table extends spocky.Module
         return this;
     }
 
+    setNoSort(noSort)
+    {
+        js0.args(arguments, 'boolean');
+
+        this._noSort = noSort;
+
+        return this;
+    }
+
     setOnApiResult(onApiResultFn)
     {
         js0.args(arguments, 'function');
@@ -261,11 +272,22 @@ export default class Table extends spocky.Module
 
     update(tableData)
     {
+        this.msgs.showLoading('', true);
+
         let rows = this._parseResultRows(tableData);
 
         this._rows = this._rows_Sort(rows);
         this._rows_Current = this._rows_Filter(this._rows);
-        this._rows_Update(this._rows_Current);
+        this._rows_Update_Async(this._rows_Current)
+            .then(() => {
+                this.msgs.hideLoading();
+            })
+            .catch((e) => {
+                console.error(e);
+
+                this.msgs.showMessage_Failure(e.toString());
+                this.msgs.hideLoading();
+            });
     }
 
 
@@ -290,7 +312,7 @@ export default class Table extends spocky.Module
             }
 
             this._filter.timeoutId = setTimeout(() => {
-                this.msgs.showLoading();
+                this.msgs.showLoading('', true);
 
                 if (this._filter.current === this._filter.value) {
                     this.msgs.hideLoading();
@@ -305,11 +327,16 @@ export default class Table extends spocky.Module
                     this._rows_Refresh(false);
                 else {
                     this._rows_Current = this._rows_Filter(this._rows);
-                    this._rows_Update(this._rows_Current);
-
-                    this._filter.timeoutId = null;
-
-                    this.msgs.hideLoading();
+                    this._rows_Update_Async(this._rows_Current)
+                        .then(() => {
+                            this._filter.timeoutId = null;
+                            this.msgs.hideLoading();
+                        })
+                        .catch((e) => {
+                            this.msgs.showMessage_Failure(e.toString());
+                            this.msgs.hideLoading();
+                            console.error(e);
+                        });
                 }
             }, 300);
         };
@@ -344,7 +371,17 @@ export default class Table extends spocky.Module
                     this._rows = this._rows_Sort(this._rows);
                     this._rows_Current = this._rows_Filter(this._rows);
 
-                    this._rows_Update(this._rows_Current);
+                    this.msgs.showLoading('', true);
+                    this._rows_Update_Async(this._rows_Current)
+                        .then(() => {
+                            this.msgs.hideLoading();
+                        })
+                        .catch((e) => {
+                            console.error(e);
+
+                            this.msgs.showMessage_Failure(e.toString());
+                            this.msgs.hideLoading();
+                        });
                 }
             });
         })
@@ -359,8 +396,20 @@ export default class Table extends spocky.Module
 
             if (this._dynamic)
                 this._rows_Refresh(true, false);
-            else
-                this._rows_Update(this._rows_Current, false);
+            else {
+                this.msgs.showLoading('', true);
+                this._rows_Update_Async(this._rows_Current, false)
+                    .then(() => {
+                        this.msgs.hideLoading();
+                    })
+                    .catch((e) => {
+                        console.error(e);
+
+                        this.msgs.showMessage_Failure(e.toString());
+                        this.msgs.hideLoading();
+                    });
+
+            }
         });
     }
 
@@ -659,25 +708,25 @@ export default class Table extends spocky.Module
             return a_value.localeCompare(b_value);
     }
 
-    _rows_Update(rows, clearAll = true)
+    _rows_Update_Async(rows, clearAll = true)
     {
-        /* Header */
-        let orderBy_ColumnIndex = this._columnRefs[this._info.orderBy.columnName];
-        for (let i = 0; i < this.l.$fields.table.headers().$size; i++) {
-            if (i !== orderBy_ColumnIndex) {
-                this.l.$fields.table.headers(i).caretDown = false;
-                this.l.$fields.table.headers(i).caretUp = false;
-            } else {
-                this.l.$fields.table.headers(i).caretDown = !this._info.orderBy.reverse;
-                this.l.$fields.table.headers(i).caretUp = this._info.orderBy.reverse;
+        return new Promise((resolve, reject) => {
+            /* Header */
+            let orderBy_ColumnIndex = this._columnRefs[this._info.orderBy.columnName];
+            for (let i = 0; i < this.l.$fields.table.headers().$size; i++) {
+                if (i !== orderBy_ColumnIndex) {
+                    this.l.$fields.table.headers(i).caretDown = false;
+                    this.l.$fields.table.headers(i).caretUp = false;
+                } else {
+                    this.l.$fields.table.headers(i).caretDown = !this._info.orderBy.reverse;
+                    this.l.$fields.table.headers(i).caretUp = this._info.orderBy.reverse;
+                }
             }
-        }
 
-        // if (clearAll)
-        //     this.l.$fields.table.rows = [];
-        /* / Header */
+            // if (clearAll)
+            //     this.l.$fields.table.rows = [];
+            /* / Header */
 
-        setTimeout(() => {
             /* Rows */
             let tRows;
             if (this._dynamic)
@@ -691,9 +740,39 @@ export default class Table extends spocky.Module
                 showLoadMore: rows.length >= this._limit.current,
                 colsLength: tRows.length === 0 ? 0 : tRows[0].cols.length,
             };
-            /* / Rows */ 
-        }, 10);
+
+            resolve();
+
+            // rows = rows.slice(0, 150);
+
+            // let rowI = 0;
+            // let ts = new js0.TimeSpan();
+            // for (let i = 0; i < rows.length; i += 1) {
+            //     setTimeout(() => {
+            //         this.l.$fields.table.rows().$push(rows[rowI]);
+            //         rowI++;
+
+            //         if (rowI >= rows.length) {
+            //             console.log(js0.TimeSpan.GetInstance('Table').getDiffs());    
+            //             resolve();
+            //         }
+
+            //         // ts.markStart('Test ' + rowI);
+            //         // this.l.$fields.table.rows().$add(rowI, rows[rowI]);
+            //         // rowI++;
+            //         // ts.markEnd('Test ' + rowI);
+
+            //         // if (rowI === rows.length) {
+            //         //     console.log(ts.getDiffs());
+            //         //     console.log(js0.TimeSpan.GetInstance('ListField').getDiffs());
+                        
+            //         //     resolve();
+            //         // }
+            //     }, 0);
+            // }
+        });
     }
+
 
     _rows_Refresh(update = false, clearAll = true)
     {
@@ -701,17 +780,24 @@ export default class Table extends spocky.Module
 
         let fields = this._getFields(update);
 
-        this.msgs.showLoading();
+        this.msgs.showLoading('', true);
 
         if (this._info.fn !== null) {
             this._info.fn(fields)
                 .then((result) => {
-                    if (result.success)
-                        this._rows_Refresh_Process(update, clearAll, result.data, fields);
-                    else
+                    if (result.success) {
+                        this._rows_Refresh_Process_Async(update, clearAll, result.data, fields)
+                            .then(() => {
+                                this.msgs.hideLoading();
+                            })
+                            .catch((e) => {
+                                this.msgs.showMessage_Failure(e.toString());
+                                this.msgs.hideLoading();
+                            });
+                    } else {
                         this.msgs.showMessage_Failure(result.data.message);
-
-                    this.msgs.hideLoading();
+                        this.msgs.hideLoading();
+                    }
                 })
                 .catch((e) => {
                     console.error(e);
@@ -721,9 +807,16 @@ export default class Table extends spocky.Module
                 });
         } else if (this._info.apiUri !== null) {
             webABApi.json(this._info.apiUri, fields, (result) => {
-                if (result.isSuccess())
-                    this._rows_Refresh_Process(update, clearAll, result.data, fields);
-                else {
+                if (result.isSuccess()) {
+                    this._rows_Refresh_Process_Async(update, clearAll, result.data, fields)
+                        .then(() => {
+                            this.msgs.hideLoading();
+                        })
+                        .catch((e) => {
+                            this.msgs.showMessage_Failure(e);
+                            this.msgs.hideLoading();
+                        });
+                } else {
                     // this.rows_Update(this.rows);
     
                     this.msgs.showMessage_Failure(result.data.message);
@@ -741,7 +834,7 @@ export default class Table extends spocky.Module
         
     }
 
-    _rows_Refresh_Process(update, clearAll, data, apiFields)
+    async _rows_Refresh_Process_Async(update, clearAll, data, apiFields)
     {
         if (!('table' in data)) {
             console.error('Table refresh result:', data);
@@ -757,11 +850,16 @@ export default class Table extends spocky.Module
             this._rows = this._rows.concat(rows_ApiResult);                    
             this._rows_Current = this._rows;
         } else {
-            this._rows = this._rows_Sort(rows_ApiResult);
+            if (this._noSort) {
+                this._info.orderBy.columnName = '';
+                this._rows = rows_ApiResult;
+            } else
+                this._rows = this._rows_Sort(rows_ApiResult);
+
             this._rows_Current = this._rows_Filter(this._rows);
         }
 
-        this._rows_Update(this._rows_Current, clearAll);
+        return await this._rows_Update_Async(this._rows_Current, clearAll);
     }
 
 }
