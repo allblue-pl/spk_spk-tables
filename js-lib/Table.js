@@ -287,7 +287,11 @@ export default class Table extends spocky.Module
 
         let rows = this._parseResultRows(tableData);
 
-        this._rows = this._rows_Sort(rows);
+        if (this._noSort) {
+            this._info.orderBy.columnName = null;
+            this._rows = this._rows_Sort(rows);
+        }
+
         this._rows_Current = this._rows_Filter(this._rows);
         this._rows_Update_Async(this._rows_Current)
             .then(() => {
@@ -917,7 +921,7 @@ export default class Table extends spocky.Module
             this._rows_Current = this._rows;
         } else {
             if (this._noSort) {
-                this._info.orderBy.columnName = '';
+                this._info.orderBy.columnName = null;
                 this._rows = rows_ApiResult;
             } else
                 this._rows = this._rows_Sort(rows_ApiResult);
