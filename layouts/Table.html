@@ -52,7 +52,13 @@
                 </td>
             </tr>
 
-            <tr _show="table.showLoadMore" class="e-load-more">
+            <tr _show="table.loading" class="e-load-more">
+                <td colspan="$table.colsLength" style="text-align: center;">
+                    $text('loading')
+                </td>
+            </tr>
+
+            <tr _show="table.showLoadMore" _hide="table.loading" class="e-load-more">
                 <td _elem="loadMore" colspan="$table.colsLength"
                         class="clickable" style="text-align: center;">
                     <a href="#" class="btn btn-outline-secondary mt-3 w-100">
