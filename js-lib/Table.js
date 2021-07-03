@@ -290,7 +290,8 @@ export default class Table extends spocky.Module
         if (this._noSort) {
             this._info.orderBy.columnName = null;
             this._rows = this._rows_Sort(rows);
-        }
+        } else
+            this._rows = rows;
 
         this._rows_Current = this._rows_Filter(this._rows);
         this._rows_Update_Async(this._rows_Current)
@@ -814,6 +815,7 @@ export default class Table extends spocky.Module
                 return;
 
             this.l.$fields.table.rows().$push(this._rows_Fields[rowI]);
+
             rowI++;
             if (rowI >= this._rows_Fields.length) {
                 this.l.$fields.table.loading = false;
