@@ -281,6 +281,15 @@ export default class Table extends spocky.Module
         return this;
     }
 
+    setTitle(title)
+    {
+        js0.args(arguments, [ 'string', js0.Null ]);
+
+        this.l.$fields.Title = title;
+
+        return this;
+    }
+
     update(tableData)
     {
         this.msgs.showLoading('');
@@ -507,6 +516,10 @@ export default class Table extends spocky.Module
             tableArgs.table.limit = this._limit.current - (update ? this._rows_Current.length : 0);
         }
 
+        fields.tableInfo = {
+            columns: this._info.columns,
+            orderBy: this._info.orderBy,
+        };
         fields.tableArgs = tableArgs;
 
         if (this._fns_ApiFields !== null) {
