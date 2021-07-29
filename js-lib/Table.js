@@ -82,6 +82,7 @@ export default class Table extends spocky.Module
             current: 50,
             step: 100,
         };
+        this._rowsFilterFn = null;
 
         this._fns_ApiFields = null;
         this._fns_RowHref = null;
@@ -267,6 +268,15 @@ export default class Table extends spocky.Module
         return this;
     }
 
+    setRowsFilter(rowsFilterFn)
+    {
+        js0.args(arguments, [ 'function', js0.Null ]);
+
+        this._rowsFilterFn = rowsFilterFn;
+
+        return this;
+    }
+
     setSelectable(selectable)
     {
         this.l.$fields.table.selectable = selectable ? true : false;
@@ -290,11 +300,12 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    update(tableData)
+    update(tableData = js0.NotSet)
     {
         this.msgs.showLoading('');
 
-        let rows = this._parseResultRows(tableData);
+        let rows = tableData === js0.NotSet ? 
+                this._rows : this._parseResultRows(tableData);
 
         if (this._noSort) {
             this._info.orderBy.columnName = null;
@@ -528,6 +539,8 @@ export default class Table extends spocky.Module
                 fields[fieldName] = apiFields[fieldName];
         }
 
+        console.log(fields);
+
         return fields;
     }
 
@@ -619,6 +632,10 @@ export default class Table extends spocky.Module
 
     _rows_Filter(rows)
     {
+        if (this._rowsFilterFn !== null) {
+            rows = this._rowsFilterFn(rows, this.columnRefs);
+        }
+
         if (this._dynamic)
             return rows;
 
