@@ -509,10 +509,7 @@ export default class Table extends spocky.Module
     {
         this.l.$fields.table.trClass = '';
         this.l.$fields.text = (text) => {
-            if (!(text in spkTables.texts))
-                return `#${text}#`;
-
-            return spkTables.texts[text];
+            return spkTables.text(text);
         }
     }
 
@@ -883,7 +880,7 @@ export default class Table extends spocky.Module
         if (this._info.fn !== null) {
             this._info.fn(fields)
                 .then((result) => {
-                    if (result.success) {
+                    if (result.error === null) {
                         this._rows_Refresh_Process_Async(update, clearAll, result.data, fields)
                             .then(() => {
                                 this.msgs.hideLoading();
@@ -895,7 +892,7 @@ export default class Table extends spocky.Module
                                 this.msgs.hideLoading();
                             });
                     } else {
-                        this.msgs.showMessage_Failure(result.data.message);
+                        this.msgs.showMessage_Failure(result.error);
                         this.msgs.hideLoading();
                     }
                 })

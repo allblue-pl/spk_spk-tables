@@ -17,18 +17,29 @@ class spkTables_Class
         return require('./Table');
     }
 
-    get texts() {
-        return this._texts;
-    }
-
-    setTexts(texts)
-    {
-        this._texts = texts;
-    }
 
     constructor()
     {
-        this._texts = {};
+        this._textFn = (text) => {
+            return this._texts[text];
+        };  
+        this._texts = {
+            Error: 'Error',
+        };
+    }
+
+    setTextFn(textFn)
+    {
+        js0.args(arguments, 'function');
+
+        this._textFn = textFn;
+    }
+
+    text(text)
+    {
+        js0.args(arguments, 'string');
+
+        return this._textFn(text);
     }
 
 }
