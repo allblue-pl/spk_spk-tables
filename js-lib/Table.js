@@ -536,8 +536,6 @@ export default class Table extends spocky.Module
                 fields[fieldName] = apiFields[fieldName];
         }
 
-        console.log(fields);
-
         return fields;
     }
 
