@@ -31,7 +31,7 @@ export default class Table extends spocky.Module
         js0.typeE(tableInfo, js0.Preset({
             columns: js0.Iterable(js0.Preset({
                 name: 'string',
-                refColumnName: [ 'string', js0.Null, js0.Default(Table.NotSet) ],
+                refColumnName: [ 'string', 'symbol', js0.Default(Table.NotSet) ],
                 header: 'string',
                 class: [ 'string', js0.Default('') ],
                 style: [ 'string', js0.Default('') ],
@@ -629,6 +629,9 @@ export default class Table extends spocky.Module
     {
         if (this._rowsFilterFn !== null) {
             rows = this._rowsFilterFn(rows, this.columnRefs);
+            if (!js0.type(rows, Array)) {
+                throw new Error(`'RowsFilterFn' must return an array.`);
+            }
         }
 
         if (this._dynamic)
