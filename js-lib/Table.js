@@ -37,7 +37,7 @@ export default class Table extends spocky.Module
                 style: [ 'string', js0.Default('') ],
                 textStyle: [ 'string', js0.Default('') ],
                 orderBy: [ js0.Preset({
-                    priority: 'number',
+                    priority: [ 'number', js0.Default(0) ],
                     reverse: [ 'boolean', js0.Default(false) ],
                 }), js0.Default({ priority: 0, reverse: false }) ],
             })),
