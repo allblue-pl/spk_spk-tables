@@ -31,7 +31,7 @@ export default class Table extends spocky.Module
         js0.typeE(tableInfo, js0.Preset({
             columns: js0.Iterable(js0.Preset({
                 name: 'string',
-                refColumnName: [ 'string', 'symbol', js0.Default(Table.NotSet) ],
+                refColumnName: [ 'string', js0.Null, 'symbol', js0.Default(Table.NotSet) ],
                 header: 'string',
                 class: [ 'string', js0.Default('') ],
                 style: [ 'string', js0.Default('') ],
