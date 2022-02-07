@@ -8,7 +8,7 @@
                 <i class="fa fa-search"></i>
             </div>
             <input _elem="filter"
-                placeholder="$text('search_Placeholder')"
+                placeholder="$text('Search_Placeholder')"
                 type="text" class="form-control" />
         </div>
     </form>
@@ -20,7 +20,7 @@
 <$ _holder="beforeTable" />
 
 <div _show="table.isEmpty" class="table_empty pb-5">
-    $text('tableEmpty')
+    $text('TableEmpty')
 </div>
 <div _hide="table.isEmpty" class="table-responsive">
     <table class="table">
@@ -56,7 +56,7 @@
 
             <tr _show="table.loading" class="e-load-more">
                 <td colspan="$table.colsLength" style="text-align: center;">
-                    $text('loading')
+                    $text('Loading')
                 </td>
             </tr>
 
@@ -64,7 +64,7 @@
                 <td _elem="loadMore" colspan="$table.colsLength"
                         class="clickable" style="text-align: center;">
                     <a href="#" class="btn btn-outline-secondary mt-3 w-100">
-                        $text('loadMore')
+                        $text('LoadMore')
                         &nbsp;<i class="fa fa-caret-down" aria-hidden="true"></i>
                     </a>
                 </td>
