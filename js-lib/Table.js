@@ -133,6 +133,29 @@ export default class Table extends spocky.Module
         return rows_Selected;
     }
 
+    getTableArgs()
+    {
+        let tableArgs = {};
+
+        tableArgs.table = {
+            filter: this._filter.value,
+            orderColumnName: this._info.orderBy.columnName,
+            orderColumnDesc: this._info.orderBy.reverse,
+        };
+
+        // tableArgs.custom = this._getCustomFilterInfos();
+
+        return tableArgs;
+    }
+
+    getTableInfo()
+    {
+        return {
+            columns: this._info.columns,
+            orderBy: this._info.orderBy,
+        };
+    }
+
     refresh()
     {
         this._limit.current = this._limit.start;        
@@ -518,7 +541,7 @@ export default class Table extends spocky.Module
         /* Fields */
         let fields = {};
 
-        let tableArgs = this._getTableArgs();
+        let tableArgs = this.getTableArgs();
         if (this._dynamic) {
             tableArgs.table.offset = update ? this._rows_Current.length : 0;
             tableArgs.table.limit = this._limit.current - (update ? this._rows_Current.length : 0);
@@ -537,21 +560,6 @@ export default class Table extends spocky.Module
         }
 
         return fields;
-    }
-
-    _getTableArgs()
-    {
-        let tableArgs = {};
-
-        tableArgs.table = {
-            filter: this._filter.value,
-            orderColumnName: this._info.orderBy.columnName,
-            orderColumnDesc: this._info.orderBy.reverse,
-        };
-
-        // tableArgs.custom = this._getCustomFilterInfos();
-
-        return tableArgs;
     }
 
     _parseInfo()
