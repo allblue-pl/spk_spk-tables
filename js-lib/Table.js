@@ -90,6 +90,7 @@ export default class Table extends spocky.Module
         this._listeners_OnApiResult = null;
         this._listeners_OnClick = null;
         this._listeners_OnRefresh = null;
+        this._listeners_OnSort = null;
 
         this.l = new $layouts.Table();
         this.l.$onDisplay((active) => {
@@ -253,6 +254,15 @@ export default class Table extends spocky.Module
         js0.args(arguments, 'function');
 
         this._listeners_OnRefresh = onRefreshFn;
+
+        return this;
+    }
+
+    setOnSort(onSortFn)
+    {
+        js0.args(arguments, 'function');
+
+        this._listeners_OnSort = onSortFn;
 
         return this;
     }
@@ -689,7 +699,7 @@ export default class Table extends spocky.Module
         
         let columnIndex = this._columnRefs[this._info.orderBy.columnName];
 
-        return rows.sort((a, b) => {
+        rows = rows.sort((a, b) => {
             let result = this._rows_Sort_Column(a, b, columnIndex,
                     this._info.orderBy.reverse);
 
@@ -710,6 +720,11 @@ export default class Table extends spocky.Module
 
             return 0;
         });
+
+        if (this._listeners_OnSort !== null)
+            this._listeners_OnSort(rows, this._columnRefs);
+
+        return rows;
     }
 
     _rows_Sort_Column(a, b, column_index, reverse)
