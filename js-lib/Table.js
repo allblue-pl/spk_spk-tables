@@ -90,6 +90,7 @@ export default class Table extends spocky.Module
         this._listeners_OnApiResult = null;
         this._listeners_OnClick = null;
         this._listeners_OnRefresh = null;
+        this._listeners_OnSearch = null;
         this._listeners_OnSort = null;
 
         this.l = new $layouts.Table();
@@ -258,6 +259,15 @@ export default class Table extends spocky.Module
         return this;
     }
 
+    setOnSearch(onSearchFn)
+    {
+        js0.args(arguments, 'function');
+
+        this._listeners_OnSearch = onSearchFn;
+
+        return this;
+    }
+
     setOnSort(onSortFn)
     {
         js0.args(arguments, 'function');
@@ -372,7 +382,11 @@ export default class Table extends spocky.Module
     _createElems_Filter()
     {
         let updateFilter = (evt) => {
-            this._filter.value = this.l.$elems.filter.value;
+            let filterValue = this.l.$elems.filter.value;
+            if (this._listeners_OnSearch !== null)
+                filterValue = this._listeners_OnSearch(filterValue);
+
+            this._filter.value = filterValue;
 
             /* Cancel timeout if filter changed. */
             if (this._filter.timeoutId !== null) {
