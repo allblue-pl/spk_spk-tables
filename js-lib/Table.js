@@ -40,6 +40,7 @@ export default class Table extends spocky.Module
                     priority: [ 'number', js0.Default(0) ],
                     reverse: [ 'boolean', js0.Default(false) ],
                 }), js0.Default({ priority: 0, reverse: false }) ],
+                filter: [ 'boolean', js0.Default(true), ],
             })),
             apiUri: [ 'string', js0.Null, js0.Default(null) ],
             fn: [ 'function', js0.Null, js0.Default(null) ],
@@ -502,6 +503,8 @@ export default class Table extends spocky.Module
     {
         this.l.$elems.row((elem, keys) => {
             elem.addEventListener('click', (evt) => {
+                console.log('Row clicked');
+
                 if (this._listeners_OnClick === null)
                     return;
 
@@ -879,9 +882,14 @@ export default class Table extends spocky.Module
             if (this._rows_Fields_Index > rowFieldsIndex)
                 return;
 
-            this.l.$fields.table.rows().$push(this._rows_Fields[rowI]);
+            // this.l.$fields.table.rows().$push(this._rows_Fields[rowI]);
 
-            rowI++;
+            for (let i = 0; i < Math.min(this._rows_Fields.length, 10); i++) {
+                this.l.$fields.table.rows().$push(this._rows_Fields[rowI]);
+                rowI++;
+            }
+
+            // rowI++;
             if (rowI >= this._rows_Fields.length) {
                 this.l.$fields.table.loading = false;
                 return;
@@ -889,13 +897,17 @@ export default class Table extends spocky.Module
 
             setTimeout(() => {
                 updateRows();
-            }, 0);
+            }, 100);
         };
 
-        for (let i = 0; i < Math.min(this._rows_Fields.length, 10); i++) {
-            this.l.$fields.table.rows().$push(this._rows_Fields[rowI]);
-            rowI++;
-        }
+        rowI = Math.min(this._rows_Fields.length, 50);
+        let rows_Fields_Part = this._rows_Fields.slice(0, rowI);
+        this.l.$fields.table.rows = rows_Fields_Part;
+
+        // for (let i = 0; i < Math.min(this._rows_Fields.length, 50); i++) {
+        //     this.l.$fields.table.rows().$push(this._rows_Fields[rowI]);
+        //     rowI++;
+        // }
 
         if (rowI >= this._rows_Fields.length) {
             this.l.$fields.table.loading = false;
@@ -903,7 +915,7 @@ export default class Table extends spocky.Module
         } else {
             setTimeout(() => {
                 updateRows();
-            }, 0);
+            }, 100);
         }
     }
 
