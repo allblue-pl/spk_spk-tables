@@ -503,8 +503,6 @@ export default class Table extends spocky.Module
     {
         this.l.$elems.row((elem, keys) => {
             elem.addEventListener('click', (evt) => {
-                console.log('Row clicked');
-
                 if (this._listeners_OnClick === null)
                     return;
 
@@ -979,8 +977,6 @@ export default class Table extends spocky.Module
             });
         } else
             throw new Error('No data source set.');
-
-        
     }
 
     async _rows_Refresh_Process_Async(update, clearAll, data, apiFields)
