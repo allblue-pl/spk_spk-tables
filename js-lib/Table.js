@@ -86,6 +86,7 @@ export default class Table extends spocky.Module
         this._rowsFilterFn = null;
 
         this._fns_ApiFields = null;
+        this._fns_CustomFilterFns = {};
         this._fns_RowHref = null;
 
         this._listeners_OnApiResult = null;
@@ -110,6 +111,15 @@ export default class Table extends spocky.Module
         this._parseInfo();
 
         this.$view = this.l;
+    }
+
+    addCustomFilter(filterName, filterFieldsFn)
+    {
+        if (filterName in this._fns_CustomFilterFns)
+            throw new Error(`Filter '${filterName}' already exists.`);
+
+        this._fns_CustomFilterFns[filterName] = filterFieldsFn;
+        return this;
     }
 
     addHiddenColumns(hiddenColumnNames)
@@ -146,7 +156,7 @@ export default class Table extends spocky.Module
             orderColumnDesc: this._info.orderBy.reverse,
         };
 
-        // tableArgs.custom = this._getCustomFilterInfos();
+        tableArgs.custom = this._getCustomFilterInfos();
 
         return tableArgs;
     }
@@ -250,6 +260,13 @@ export default class Table extends spocky.Module
 
         return this;
     }    
+
+    setOnColButtonClick(onClickFn)
+    {
+        js0.args(arguments, 'function');
+
+        console.warn('Not implemented.');
+    }
 
     setOnRefresh(onRefreshFn)
     {
@@ -559,6 +576,15 @@ export default class Table extends spocky.Module
         this.l.$fields.text = (text) => {
             return spkTables.text(text);
         }
+    }
+
+    _getCustomFilterInfos()
+    {
+        let filterInfos = {};
+        for (var filterName in this._fns_CustomFilterFns)
+            filterInfos[filterName] = this._fns_CustomFilterFns[filterName]();
+
+        return filterInfos;
     }
 
     _getFields(update = false)

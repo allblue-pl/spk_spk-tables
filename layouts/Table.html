@@ -27,6 +27,7 @@
 <!-- </div> -->
 
 <$ _holder="beforeTable" />
+<$ _holder="beforeTable2" />
 
 <div _show="table.isEmpty" class="table_empty pb-5">
     $text('TableEmpty')
@@ -57,9 +58,16 @@
                     <a _show="row.href" href="$row.href">
                         <span _field="col.html"></span>
                     </a>
-                    <div _hide="row.href">
-                        <span _field="col.html"></span>
-                    </div>
+                    <span _field="col.html" />
+                    <$ _show="col.button.show">
+                        <div class="$col.button.class">
+                            <a _elem="colButton(row, col)" href="#"
+                                class="btn $col.button.btnClass mg-full">
+                                <i class="$col.button.iClass"></i>
+                                $col.button.text
+                            </a>
+                        </div>
+                    </$>
                 </td>
             </tr>
 
@@ -83,4 +91,4 @@
 </div>
 <div class="mg-clear"></div>
 
-<div _holder="afterTable"></div>
+<$ _holder="afterTable"></$>
