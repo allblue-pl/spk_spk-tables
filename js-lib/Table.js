@@ -91,6 +91,7 @@ export default class Table extends spocky.Module
 
         this._listeners_OnApiResult = null;
         this._listeners_OnClick = null;
+        this._listeners_OnColumnButtonClick = null;
         this._listeners_OnRefresh = null;
         this._listeners_OnSearch = null;
         this._listeners_OnSort = null;
@@ -261,11 +262,11 @@ export default class Table extends spocky.Module
         return this;
     }    
 
-    setOnColButtonClick(onClickFn)
+    setOnColumnButtonClick(onColumnButtonClickFn)
     {
         js0.args(arguments, 'function');
 
-        console.warn('Not implemented.');
+        this._listeners_OnColumnButtonClick = onColumnButtonClickFn;
     }
 
     setOnRefresh(onRefreshFn)
@@ -390,11 +391,28 @@ export default class Table extends spocky.Module
 
     _createElems()
     {
+        this._createElems_ColumnButtons();
         this._createElems_Filter();
         this._createElems_Header();
         this._createElems_LoadMore();
         this._createElems_Rows();
         this._createElems_Selectable();
+    }
+
+    _createElems_ColumnButtons()
+    {
+        this.l.$elems.columnButton((elem, keys) => {
+            elem.addEventListener('click', (evt) => {
+                evt.stopPropagation();
+                evt.preventDefault();
+
+                let row = this._rows_Current[keys[0]];
+                let col = row.cols[keys[1]];
+
+                if (this._listeners_OnColumnButtonClick !== null)
+                    this._listeners_OnColumnButtonClick(row, col);
+            });
+        });
     }
 
     _createElems_Filter()
