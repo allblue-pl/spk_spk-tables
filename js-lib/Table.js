@@ -371,9 +371,9 @@ export default class Table extends spocky.Module
 
         if (this._noSort) {
             this._info.orderBy.columnName = null;
-            this._rows = this._rows_Sort(rows);
-        } else
             this._rows = rows;
+        } else
+            this._rows = this._rows_Sort(rows);
 
         this._rows_Current = this._rows_Filter(this._rows);
         this._rows_Update_Async(this._rows_Current)
