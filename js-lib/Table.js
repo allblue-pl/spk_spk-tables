@@ -26,7 +26,7 @@ export default class Table extends spocky.Module
     { super();
         js0.args(arguments, spkMessages.Messages, js0.RawObject);
 
-        tableInfo = js0.copyObject(tableInfo);
+        tableInfo = js0.copyRawObject(tableInfo);
 
         js0.typeE(tableInfo, js0.Preset({
             columns: js0.Iterable(js0.Preset({
@@ -39,7 +39,7 @@ export default class Table extends spocky.Module
                 orderBy: [ js0.Preset({
                     priority: [ 'number', js0.Default(0) ],
                     reverse: [ 'boolean', js0.Default(false) ],
-                }), js0.Default({ priority: 0, reverse: false }) ],
+                }), js0.Null, js0.Default(null) ],
                 filter: [ 'boolean', js0.Default(true), ],
             })),
             apiUri: [ 'string', js0.Null, js0.Default(null) ],
