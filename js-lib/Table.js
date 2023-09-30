@@ -383,7 +383,8 @@ export default class Table extends spocky.Module
             .catch((e) => {
                 console.error(e);
 
-                this.msgs.showMessage_Failure(e.toString());
+                this.msgs.showMessage_Failure(spkTables.text('Error'), 
+                        e.toString());
                 this.msgs.hideLoading();
             });
     }
@@ -454,7 +455,8 @@ export default class Table extends spocky.Module
                         .catch((e) => {
                             console.error(e);
 
-                            this.msgs.showMessage_Failure(e.toString());
+                            this.msgs.showMessage_Failure(
+                                    spkTables.text('Error'), e.toString());
                             this.msgs.hideLoading();
                             console.error(e);
                         });
@@ -500,7 +502,8 @@ export default class Table extends spocky.Module
                         .catch((e) => {
                             console.error(e);
 
-                            this.msgs.showMessage_Failure(e.toString());
+                            this.msgs.showMessage_Failure(
+                                    spkTables.text('Error'), e.toString());
                             this.msgs.hideLoading();
                         });
                 }
@@ -526,7 +529,8 @@ export default class Table extends spocky.Module
                     .catch((e) => {
                         console.error(e);
 
-                        this.msgs.showMessage_Failure(e.toString());
+                        this.msgs.showMessage_Failure(spkTables.text('Error'), 
+                                e.toString());
                         this.msgs.hideLoading();
                     });
 
@@ -980,11 +984,13 @@ export default class Table extends spocky.Module
                             .catch((e) => {
                                 console.error(e);
 
-                                this.msgs.showMessage_Failure(e.toString());
+                                this.msgs.showMessage_Failure(
+                                        spkTables.text('Error'), e.toString());
                                 this.msgs.hideLoading();
                             });
                     } else {
-                        this.msgs.showMessage_Failure(result.error);
+                        this.msgs.showMessage_Failure(spkTables.text('Error'),
+                                result.error);
                         this.msgs.hideLoading();
                     }
                 })
@@ -992,7 +998,8 @@ export default class Table extends spocky.Module
                     console.error(e);
 
                     this.msgs.hideLoading();
-                    this.msgs.showMessage_Failure(e.toString());
+                    this.msgs.showMessage_Failure(spkTables.text('Error'),
+                            e.toString());
                 });
         } else if (this._info.apiUri !== null) {
             webABApi.json(this._info.apiUri, fields, (result) => {
@@ -1004,13 +1011,16 @@ export default class Table extends spocky.Module
                         .catch((e) => {
                             console.error(e);
 
-                            this.msgs.showMessage_Failure(e);
+                            this.msgs.showMessage_Failure(
+                                    spkTables.text('Error'), 
+                                    e.toString());
                             this.msgs.hideLoading();
                         });
                 } else {
                     // this.rows_Update(this.rows);
     
-                    this.msgs.showMessage_Failure(result.data.message);
+                    this.msgs.showMessage_Failure(spkTables.text('Error'),
+                            result.data.message);
                 }
     
                 // this.$layout.$elems.each('select', function(elem) {
