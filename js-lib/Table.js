@@ -49,6 +49,7 @@ export default class Table extends spocky.Module
                 reverse: [ 'boolean', js0.Default(false) ],
             }),
             hiddenColumnNames: [ js0.Iterable('string'), js0.Default([]) ],
+            showInstantLoading: [ 'boolean', js0.Default(false) ],
         }));
 
         for (let column of tableInfo.columns) {
@@ -364,7 +365,7 @@ export default class Table extends spocky.Module
 
     update(tableData = js0.NotSet)
     {
-        this.msgs.showLoading('');
+        this.msgs.showLoading('', this._info.showInstantLoading);
 
         let rows = tableData === js0.NotSet ? 
                 this._rows : this._parseResultRows(tableData);
@@ -432,7 +433,7 @@ export default class Table extends spocky.Module
             }
 
             this._filter.timeoutId = setTimeout(() => {
-                this.msgs.showLoading('');
+                this.msgs.showLoading('', this._info.showInstantLoading);
 
                 if (this._filter.current === this._filter.value) {
                     this.msgs.hideLoading();
@@ -494,7 +495,7 @@ export default class Table extends spocky.Module
                     this._rows = this._rows_Sort(this._rows);
                     this._rows_Current = this._rows_Filter(this._rows);
 
-                    this.msgs.showLoading('');
+                    this.msgs.showLoading('', this._info.showInstantLoading);
                     this._rows_Update_Async(this._rows_Current)
                         .then(() => {
                             this.msgs.hideLoading();
@@ -521,7 +522,7 @@ export default class Table extends spocky.Module
             if (this._dynamic)
                 this._rows_Refresh(true, false);
             else {
-                this.msgs.showLoading('');
+                this.msgs.showLoading('', this._info.showInstantLoading);
                 this._rows_Update_Async(this._rows_Current, false)
                     .then(() => {
                         this.msgs.hideLoading();
@@ -930,7 +931,7 @@ export default class Table extends spocky.Module
 
             // this.l.$fields.table.rows().$push(this._rows_Fields[rowI]);
 
-            for (let i = 0; i < Math.min(this._rows_Fields.length, 10); i++) {
+            for (let i = 0; i < 10 && rowI < this._rows_Fields.length; i++) {
                 this.l.$fields.table.rows().$push(this._rows_Fields[rowI]);
                 rowI++;
             }
@@ -971,7 +972,7 @@ export default class Table extends spocky.Module
 
         let fields = this._getFields(update);
 
-        this.msgs.showLoading('');
+        this.msgs.showLoading('', this._info.showInstantLoading);
 
         if (this._info.fn !== null) {
             this._info.fn(fields)
