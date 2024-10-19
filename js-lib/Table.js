@@ -691,7 +691,7 @@ export default class Table extends spocky.Module
                 href: null,
                 class: '',
                 cols: cols,
-                style: this._listeners_OnClick === null ? '' : 'cursor: pointer',
+                style: this._listeners_OnClick === null ? '' : 'cursor: pointer;',
                 selected: false,
             };
 
@@ -730,6 +730,9 @@ export default class Table extends spocky.Module
         let fRows = [];
         for (let i = 0; i < rows.length; i++) {
             for (let j = 0; j < rows[i].cols.length; j++) {
+                if (!this._info.columns[j].filter)
+                    continue;
+
                 let colString = this._rows_Filter_FormatString(
                         String(rows[i].cols[j].value));
 
