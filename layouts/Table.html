@@ -57,18 +57,23 @@
                     <input _hide="row.selected" type="checkbox" />
                 </td>
                 <td _repeat="row.cols:col" _show="col.show" class="$col.class" style="$col.style">
-                    <a _show="row.href" href="$row.href">
-                        <span _field="col.html"></span>
-                    </a>
-                    <span _hide="row.href" _field="col.html" />
-                    <$ _show="col.button.show">
-                        <div class="$col.button.class">
-                            <a _elem="columnButton" href="#"
-                                class="btn $col.button.btnClass w-100">
-                                <i class="$col.button.iClass"></i>
-                                $col.button.text
-                            </a>
-                        </div>
+                    <$ _show="col.hasLayout">
+                        <$ _holder="colLayout" />
+                    </$>
+                    <$ _hide="col.hasLayout">
+                        <a _show="row.href" href="$row.href">
+                            <span _field="col.html"></span>
+                        </a>
+                        <span _hide="row.href" _field="col.html" />
+                        <$ _show="col.button.show">
+                            <div class="$col.button.class">
+                                <a _elem="columnButton" href="#"
+                                    class="btn $col.button.btnClass w-100">
+                                    <i class="$col.button.iClass"></i>
+                                    $col.button.text
+                                </a>
+                            </div>
+                        </$>
                     </$>
                 </td>
             </tr>
@@ -93,7 +98,7 @@
 </div>
 <div class="clearfix"></div>
 
-<$ _holder="afterTable"></$>
-<$ _holder="afterTable2"></$>
-<$ _holder="afterTable3"></$>
-<$ _holder="afterTable4"></$>
+<$ _holder="afterTable" />
+<$ _holder="afterTable2" />
+<$ _holder="afterTable3" />
+<$ _holder="afterTable4" />

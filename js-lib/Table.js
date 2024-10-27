@@ -22,8 +22,7 @@ export default class Table extends spocky.Module
         return this.l;
     }
 
-    constructor(msgs, tableInfo)
-    { super();
+    constructor(msgs, tableInfo) { super();
         js0.args(arguments, spkMessages.Messages, js0.RawObject);
 
         tableInfo = js0.copyRawObject(tableInfo);
@@ -115,8 +114,7 @@ export default class Table extends spocky.Module
         this.$view = this.l;
     }
 
-    addCustomFilter(filterName, filterFieldsFn)
-    {
+    addCustomFilter(filterName, filterFieldsFn) {
         if (filterName in this._fns_CustomFilterFns)
             throw new Error(`Filter '${filterName}' already exists.`);
 
@@ -124,16 +122,14 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    addHiddenColumns(hiddenColumnNames)
-    {
+    addHiddenColumns(hiddenColumnNames) {
         js0.args(arguments, Array);
 
         hiddenColumnNames = this._info.hiddenColumnNames.concat(hiddenColumnNames);        
         this.setHiddenColumns(hiddenColumnNames);
     }
 
-    getSelectedRows()
-    {
+    getSelectedRows() {
         let rows_Selected = [];
         for (let row of this._rows_Current) {
             if (row.selected) {
@@ -148,8 +144,7 @@ export default class Table extends spocky.Module
         return rows_Selected;
     }
 
-    getTableArgs()
-    {
+    getTableArgs() {
         let tableArgs = {};
 
         tableArgs.table = {
@@ -163,23 +158,28 @@ export default class Table extends spocky.Module
         return tableArgs;
     }
 
-    getTableInfo()
-    {
+    getTableInfo() {
         return {
             columns: this._info.columns,
             orderBy: this._info.orderBy,
         };
     }
 
-    refresh()
-    {
+    refresh() {
         this._limit.current = this._limit.start;        
 
         this._rows_Refresh(false);
     }
 
-    removeHiddenColumns(hiddenColumnNames)
-    {
+    refreshRow(index) {
+        js0.args(arguments, 'int');
+
+        this._rows_Fields[index] = this._rows_UpdateFields_ParseRow(
+            this._rows_Current[index]);
+        this.l.$fields.table.rows(index, this._rows_Fields[index]);
+    }
+
+    removeHiddenColumns(hiddenColumnNames) {
         js0.args(arguments, Array);
 
         hiddenColumnNames = this._info.hiddenColumnNames.filter((el) => {
@@ -188,8 +188,7 @@ export default class Table extends spocky.Module
         this.setHiddenColumns(hiddenColumnNames);
     }
 
-    setApiFields(apiFieldsFn)
-    {
+    setApiFields(apiFieldsFn) {
         js0.args(arguments, 'function');
 
         this._fns_ApiFields = apiFieldsFn;
@@ -197,8 +196,7 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    setDynamic(dynamic)
-    {
+    setDynamic(dynamic) {
         js0.args(arguments, 'boolean');
 
         this._dynamic = dynamic;
@@ -206,8 +204,7 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    setHiddenColumns(hiddenColumnNames)
-    {
+    setHiddenColumns(hiddenColumnNames) {
         js0.args(arguments, js0.Iterable('string'));
 
         for (let colName of hiddenColumnNames) {
@@ -232,8 +229,7 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    setLimit(start, step)
-    {
+    setLimit(start, step) {
         js0.args(arguments, 'number', 'number');
 
         this._limit = {
@@ -245,8 +241,7 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    setNoSort(noSort)
-    {
+    setNoSort(noSort) {
         js0.args(arguments, 'boolean');
 
         this._noSort = noSort;
@@ -254,8 +249,7 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    setOnApiResult(onApiResultFn)
-    {
+    setOnApiResult(onApiResultFn) {
         js0.args(arguments, 'function');
 
         this._listeners_OnApiResult = onApiResultFn;
@@ -263,15 +257,13 @@ export default class Table extends spocky.Module
         return this;
     }    
 
-    setOnColumnButtonClick(onColumnButtonClickFn)
-    {
+    setOnColumnButtonClick(onColumnButtonClickFn) {
         js0.args(arguments, 'function');
 
         this._listeners_OnColumnButtonClick = onColumnButtonClickFn;
     }
 
-    setOnRefresh(onRefreshFn)
-    {
+    setOnRefresh(onRefreshFn) {
         js0.args(arguments, 'function');
 
         this._listeners_OnRefresh = onRefreshFn;
@@ -279,8 +271,7 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    setOnSearch(onSearchFn)
-    {
+    setOnSearch(onSearchFn) {
         js0.args(arguments, 'function');
 
         this._listeners_OnSearch = onSearchFn;
@@ -288,8 +279,7 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    setOnSort(onSortFn)
-    {
+    setOnSort(onSortFn) {
         js0.args(arguments, 'function');
 
         this._listeners_OnSort = onSortFn;
@@ -306,8 +296,7 @@ export default class Table extends spocky.Module
     //     return this;
     // }
 
-    setOnRowClick(onClickFn, rowHrefFn = null)
-    {
+    setOnRowClick(onClickFn, rowHrefFn = null) {
         js0.args(arguments, [ 'function', js0.Null ], [ 'function', js0.Default ]);
 
         this._listeners_OnClick = onClickFn;        
@@ -321,8 +310,7 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    setOrderBy(columnName, reverse = false)
-    {
+    setOrderBy(columnName, reverse = false) {
         js0.args(arguments, 'string', [ 'boolean', js0.Default ]);
 
         this._info.orderBy.columnName = columnName
@@ -331,8 +319,7 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    setRowsFilter(rowsFilterFn)
-    {
+    setRowsFilter(rowsFilterFn) {
         js0.args(arguments, [ 'function', js0.Null ]);
 
         this._rowsFilterFn = rowsFilterFn;
@@ -340,22 +327,19 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    setSelectable(selectable)
-    {
+    setSelectable(selectable) {
         this.l.$fields.table.selectable = selectable ? true : false;
 
         return this;
     }
 
-    setShowSearch(showSearch)
-    {
+    setShowSearch(showSearch) {
         this.l.$fields.table.showSearch = showSearch;
 
         return this;
     }
 
-    setTitle(title)
-    {
+    setTitle(title) {
         js0.args(arguments, [ 'string', js0.Null ]);
 
         this.l.$fields.Title = title;
@@ -363,12 +347,20 @@ export default class Table extends spocky.Module
         return this;
     }
 
-    update(tableData = js0.NotSet)
-    {
+    update(tableData = js0.NotSet) {
         this.msgs.showLoading('', this._info.showInstantLoading);
 
-        let rows = tableData === js0.NotSet ? 
-                this._rows : this._parseResultRows(tableData);
+        if (tableData === js0.NotSet) {
+            tableData = [];
+            for (let row of this._rows) {
+                let tableData_Col = [];
+                for (let col of row.cols)
+                    tableData_Col.push(col.value);
+                tableData.push(tableData_Col);
+            }
+        }
+
+        let rows = this._parseResultRows(tableData);
 
         if (this._noSort) {
             this._info.orderBy.columnName = null;
@@ -391,18 +383,17 @@ export default class Table extends spocky.Module
     }
 
 
-    _createElems()
-    {
+    _createElems() {
         this._createElems_ColumnButtons();
         this._createElems_Filter();
         this._createElems_Header();
         this._createElems_LoadMore();
         this._createElems_Rows();
         this._createElems_Selectable();
+        this._createElems_ColumnLayouts();
     }
 
-    _createElems_ColumnButtons()
-    {
+    _createElems_ColumnButtons() {
         this.l.$elems.columnButton((elem, keys) => {
             elem.addEventListener('click', (evt) => {
                 evt.stopPropagation();
@@ -411,14 +402,15 @@ export default class Table extends spocky.Module
                 let row = this._rows_Current[keys[0]];
                 let col = row.cols[keys[1]];
 
-                if (this._listeners_OnColumnButtonClick !== null)
-                    this._listeners_OnColumnButtonClick(row, col);
+                if (this._listeners_OnColumnButtonClick !== null) {
+                    this._listeners_OnColumnButtonClick(row, col, 
+                        keys[0], keys[1], this.columnRefs);
+                }
             });
         });
     }
 
-    _createElems_Filter()
-    {
+    _createElems_Filter() {
         let updateFilter = (evt) => {
             let filterValue = this.l.$elems.filter.value;
             if (this._listeners_OnSearch !== null)
@@ -473,8 +465,7 @@ export default class Table extends spocky.Module
         });
     }
 
-    _createElems_Header()
-    {
+    _createElems_Header() {
         this.l.$elems.header((elem, keys) => {
             elem.addEventListener('click', (evt) => {
                 evt.preventDefault();
@@ -512,8 +503,18 @@ export default class Table extends spocky.Module
         })
     }
 
-    _createElems_LoadMore()
-    {
+    _createElems_ColumnLayouts() {
+        this.l.$holders.colLayout((holder, keys) => {
+            let row = this._rows_Current[keys[0]];
+            let col = row.cols[keys[1]];
+
+            if (col.layout !== null) {
+                holder.$view = col.layout;
+            }
+        });
+    }
+
+    _createElems_LoadMore() {
         this.l.$elems.loadMore.addEventListener('click', (evt) => {
             evt.preventDefault();
 
@@ -539,8 +540,7 @@ export default class Table extends spocky.Module
         });
     }
 
-    _createElems_Rows()
-    {
+    _createElems_Rows() {
         this.l.$elems.row((elem, keys) => {
             elem.addEventListener('click', (evt) => {
                 if (this._listeners_OnClick === null)
@@ -553,8 +553,7 @@ export default class Table extends spocky.Module
         });
     }
 
-    _createElems_Selectable()
-    {
+    _createElems_Selectable() {
         let selectAll = (val) => {
             this.l.$elems.selectable_TableCheckbox.checked = val;
 
@@ -593,16 +592,14 @@ export default class Table extends spocky.Module
         });
     }
 
-    _createFields()
-    {
+    _createFields() {
         this.l.$fields.table.trClass = '';
         this.l.$fields.text = (text) => {
             return spkTables.text(text);
         }
     }
 
-    _getCustomFilterInfos()
-    {
+    _getCustomFilterInfos() {
         let filterInfos = {};
         for (var filterName in this._fns_CustomFilterFns)
             filterInfos[filterName] = this._fns_CustomFilterFns[filterName]();
@@ -610,8 +607,7 @@ export default class Table extends spocky.Module
         return filterInfos;
     }
 
-    _getFields(update = false)
-    {
+    _getFields(update = false) {
         /* Fields */
         let fields = {};
 
@@ -636,8 +632,7 @@ export default class Table extends spocky.Module
         return fields;
     }
 
-    _parseInfo()
-    {
+    _parseInfo() {
         this._columnNames = this._info.columns.map((item) => { return item.name });
         this._columnRefs = {};
         for (let i = 0; i < this._columnNames.length; i++)
@@ -673,8 +668,7 @@ export default class Table extends spocky.Module
         }
     }
 
-    _parseResultRows(resultRows)
-    {
+    _parseResultRows(resultRows) {
         let rows = [];
         for (let i = 0; i < resultRows.length; i++) {
             let cols = [];
@@ -684,6 +678,13 @@ export default class Table extends spocky.Module
                     show: !this._info.hiddenColumnNames.includes(this._columnNames[j]),
                     value: resultRows[i][j],
                     html: resultRows[i][j],
+                    button: {
+                        show: false,
+                        btnClass: '',
+                        iClass: '',
+                        text: '',
+                    },
+                    layout: null,
                 });
             }
 
@@ -707,8 +708,7 @@ export default class Table extends spocky.Module
         return rows;
     }
 
-    _rows_Filter(rows)
-    {
+    _rows_Filter(rows) {
         if (this._rowsFilterFn !== null) {
             rows = this._rowsFilterFn(rows, this.columnRefs);
             if (!js0.type(rows, Array)) {
@@ -746,13 +746,11 @@ export default class Table extends spocky.Module
         return fRows;
     }
 
-    _rows_Filter_FormatString(str)
-    {
+    _rows_Filter_FormatString(str) {
         return abStrings.escapeLangChars(str.toLowerCase());
     }
 
-    _rows_Sort(rows)
-    {
+    _rows_Sort(rows) {
         if (this._dynamic)
             return rows;
 
@@ -794,8 +792,7 @@ export default class Table extends spocky.Module
         return rows;
     }
 
-    _rows_Sort_Column(a, b, column_index, reverse)
-    {
+    _rows_Sort_Column(a, b, column_index, reverse) {
         let a_value = a.cols[column_index].value;
         let b_value = b.cols[column_index].value;
 
@@ -844,8 +841,7 @@ export default class Table extends spocky.Module
             return a_value.localeCompare(b_value);
     }
 
-    _rows_Update_Async(rows, clear = true)
-    {
+    _rows_Update_Async(rows, clear = true) {
         return new Promise((resolve, reject) => {
             /* Header */
             let orderBy_ColumnIndex = this._columnRefs[this._info.orderBy.columnName];
@@ -915,14 +911,13 @@ export default class Table extends spocky.Module
         });
     }
 
-    _rows_UpdateFields(rows, clear = true)
-    {
+    _rows_UpdateFields(rows, clear = true) {
         if (clear)
             this.l.$fields.table.rows = [];
 
         let startFrom = clear ? 0 : this._rows_Fields.length;
 
-        this._rows_Fields = rows;
+        this._rows_Fields = this._rows_UpdateFields_ParseRows(rows);
         this._rows_Fields_Index++;
 
         let rowFieldsIndex = this._rows_Fields_Index;
@@ -969,8 +964,43 @@ export default class Table extends spocky.Module
         }
     }
 
-    _rows_Refresh(update = false, clearAll = true)
-    {
+    _rows_UpdateFields_ParseRow(row) {
+        let fCols = [];
+        for (let col of row.cols) {
+            fCols.push({
+                class: col.class,
+                show: col.show,
+                value: col.value,
+                html: col.html,
+                button: {
+                    btnClass: col.button.btnClass,
+                    iClass: col.button.iClass,
+                    show: col.button.show,
+                    text: col.button.text,
+                },
+                hasLayout: col.layout !== null,
+            });
+        }
+
+        return {
+            href: row.href,
+            class: row.class,
+            cols: fCols,
+            style: row.style,
+            selected: row.selected,
+        };
+    }
+
+    _rows_UpdateFields_ParseRows(rows) {
+        let fRows = [];
+        for (let row of rows)
+            fRows.push(this._rows_UpdateFields_ParseRow(row));
+
+
+        return fRows;
+    }
+
+    _rows_Refresh(update = false, clearAll = true) {
         update = this._dynamic ? update : false;
 
         let fields = this._getFields(update);
@@ -1037,8 +1067,7 @@ export default class Table extends spocky.Module
             throw new Error('No data source set.');
     }
 
-    async _rows_Refresh_Process_Async(update, clearAll, data, apiFields)
-    {
+    async _rows_Refresh_Process_Async(update, clearAll, data, apiFields) {
         if (!('table' in data)) {
             console.error('Table refresh result:', data);
             throw new Error('No `table` in data.');
