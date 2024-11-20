@@ -97,15 +97,17 @@ export default class Table extends spocky.Module
         this._listeners_OnSort = null;
 
         this.l = new $layouts.Table();
-        this.l.$onDisplay((active) => {
-            if (active) {
-                if (this._rows_Fields.length > 0)
-                    this._rows_UpdateFields(this._rows_Fields, true);
-            } else {
-                this._rows_Fields_Index++;
-                this.l.$fields.table.rows = [];
-            }
-        });
+
+        /* Why is it needed? */
+        // this.l.$onDisplay((active) => {
+            // if (active) {
+            //     if (this._rows_Fields.length > 0)
+            //         this._rows_UpdateFields(this._rows_Fields, true);
+            // } else {
+            //     this._rows_Fields_Index++;
+            //     this.l.$fields.table.rows = [];
+            // }
+        // });
 
         this._createFields();
         this._createElems();
@@ -945,9 +947,13 @@ export default class Table extends spocky.Module
             }, 100);
         };
 
-        rowI = Math.min(this._rows_Fields.length, 50);
-        let rows_Fields_Part = this._rows_Fields.slice(0, rowI);
-        this.l.$fields.table.rows = rows_Fields_Part;
+        /* Remove 'clear' check and change 'this.l.$fields.table.rows = ' to 
+         * $pushArr when it will exist. */
+        if (clear) {
+            rowI = Math.min(this._rows_Fields.length, 50);
+            let rows_Fields_Part = this._rows_Fields.slice(0, rowI);
+            this.l.$fields.table.rows = rows_Fields_Part;
+        }
 
         // for (let i = 0; i < Math.min(this._rows_Fields.length, 50); i++) {
         //     this.l.$fields.table.rows().$push(this._rows_Fields[rowI]);
@@ -995,7 +1001,6 @@ export default class Table extends spocky.Module
         let fRows = [];
         for (let row of rows)
             fRows.push(this._rows_UpdateFields_ParseRow(row));
-
 
         return fRows;
     }
