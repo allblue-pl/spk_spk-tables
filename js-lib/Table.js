@@ -71,6 +71,8 @@ export default class Table extends spocky.Module
         this._rows_Fields = [];
         this._rows_Fields_Index = 0;
 
+        this._rows_RefreshQueueCount = 0;
+
         this._noSort = false;
 
         this._filter = {
@@ -1006,15 +1008,21 @@ export default class Table extends spocky.Module
     }
 
     _rows_Refresh(update = false, clearAll = true) {
+        this._rows_RefreshQueueCount++;
         update = this._dynamic ? update : false;
 
         let fields = this._getFields(update);
 
         this.msgs.showLoading('', this._info.showInstantLoading);
 
+        // setTimeout(() => {
         if (this._info.fn !== null) {
             this._info.fn(fields)
                 .then((result) => {
+                    this._rows_RefreshQueueCount--;
+                    if (this._rows_RefreshQueueCount > 0)
+                        return;
+
                     if (result.error === null) {
                         this._rows_Refresh_Process_Async(update, clearAll, result.data, fields)
                             .then(() => {
@@ -1042,6 +1050,10 @@ export default class Table extends spocky.Module
                 });
         } else if (this._info.apiUri !== null) {
             webABApi.json(this._info.apiUri, fields, (result) => {
+                this._rows_RefreshQueueCount--;
+                if (this._rows_RefreshQueueCount > 0)
+                    return;
+
                 if (result.isSuccess()) {
                     this._rows_Refresh_Process_Async(update, clearAll, result.data, fields)
                         .then(() => {
@@ -1070,6 +1082,7 @@ export default class Table extends spocky.Module
             });
         } else
             throw new Error('No data source set.');
+        // }, 5000);
     }
 
     async _rows_Refresh_Process_Async(update, clearAll, data, apiFields) {
