@@ -11,11 +11,13 @@ const
     spkTables = require('.')
 ;
 
-export default class Table extends spocky.Module
-{
-
+export default class Table extends spocky.Module {
     get columnRefs() {
         return this._columnRefs;
+    }
+
+    get isSelectable() {
+        return this._selectable;
     }
 
     get layout() {
@@ -74,6 +76,10 @@ export default class Table extends spocky.Module
         this._rows_RefreshQueueCount = 0;
 
         this._noSort = false;
+        this._selectable = false;
+        this._selectable_ShowSelectAll = true;
+        this._selectable_SelectedOnTop = false;
+        this._sortable = true;
 
         this._filter = {
             value: '',
@@ -95,6 +101,7 @@ export default class Table extends spocky.Module
         this._listeners_OnClick = null;
         this._listeners_OnColumnButtonClick = null;
         this._listeners_OnRefresh = null;
+        this._listeners_OnRowSelected = null;
         this._listeners_OnSearch = null;
         this._listeners_OnSort = null;
 
@@ -183,6 +190,26 @@ export default class Table extends spocky.Module
         this.l.$fields.table.rows(index, this._rows_Fields[index]);
     }
 
+    refreshAllRows() {
+        if (!this._noSort)
+            this._rows = this._rows_Sort(this._rows);
+        else
+            this._rows = this._rows_NoSort(this._rows);
+
+        this._rows_Current = this._rows_Filter(this._rows);
+        this._rows_Update_Async(this._rows_Current)
+            .then(() => {
+                this.msgs.hideLoading();
+            })
+            .catch((e) => {
+                console.error(e);
+
+                this.msgs.showMessage_Failure(spkTables.text('Error'), 
+                        e.toString());
+                this.msgs.hideLoading();
+            });
+    }
+
     removeHiddenColumns(hiddenColumnNames) {
         js0.args(arguments, Array);
 
@@ -206,6 +233,11 @@ export default class Table extends spocky.Module
         this._dynamic = dynamic;
 
         return this;
+    }
+
+    setFilterText(filterValue) {
+        this.l.$elems.filter.value = filterValue;
+        this._filter.value = filterValue;
     }
 
     setHiddenColumns(hiddenColumnNames) {
@@ -275,6 +307,12 @@ export default class Table extends spocky.Module
         return this;
     }
 
+    setOnRowSelected(onRowSelectedFn) {
+        this._listeners_OnRowSelected = onRowSelectedFn;
+
+        return this;
+    }
+
     setOnSearch(onSearchFn) {
         js0.args(arguments, 'function');
 
@@ -332,13 +370,39 @@ export default class Table extends spocky.Module
     }
 
     setSelectable(selectable) {
-        this.l.$fields.table.selectable = selectable ? true : false;
+        js0.args(arguments, 'boolean');
+
+        this._selectable = selectable;
+        this.l.$fields.table.selectable = selectable;
+
+        return this;
+    }
+
+    setSelectable_SelectedOnTop(selectedOnTop) {
+        js0.args(arguments, 'boolean');
+
+        this._selectable_SelectedOnTop = selectedOnTop;
+
+        return this;
+    }
+
+    setSelectable_ShowSelectAll(showSelectAll) {
+        js0.args(arguments, 'boolean');
+
+        this._selectable_ShowSelectAll = showSelectAll;
+        this.l.$fields.table.selectable_ShowSelectAll = this._selectable && 
+                showSelectAll;
 
         return this;
     }
 
     setShowSearch(showSearch) {
         this.l.$fields.table.showSearch = showSearch;
+
+        return this;
+    }
+    setSortable(sortable) {
+        this._sortable = sortable;
 
         return this;
     }
@@ -368,7 +432,7 @@ export default class Table extends spocky.Module
 
         if (this._noSort) {
             this._info.orderBy.columnName = null;
-            this._rows = rows;
+            this._rows = this._rows_NoSort(rows);
         } else
             this._rows = this._rows_Sort(rows);
 
@@ -474,6 +538,10 @@ export default class Table extends spocky.Module
             elem.addEventListener('click', (evt) => {
                 evt.preventDefault();
 
+                if (!this._sortable)
+                    return;
+
+
                 let columnName = this._columnNames[keys[0]];
                 if (this._info.orderBy.columnName === columnName)
                     this._info.orderBy.reverse = !this._info.orderBy.reverse
@@ -552,13 +620,17 @@ export default class Table extends spocky.Module
 
                 evt.preventDefault();
 
-                this._listeners_OnClick(this._rows_Current[keys[0]], this.columnRefs);
+                this._listeners_OnClick(this._rows_Current[keys[0]], 
+                        this.columnRefs, keys[0]);
             })
         });
     }
 
     _createElems_Selectable() {
         let selectAll = (val) => {
+            if (!this._selectable_ShowSelectAll)
+                return;
+
             this.l.$elems.selectable_TableCheckbox.checked = val;
 
             for (let i = 0; i < this.l.$fields.table.rows().$size; i++) {
@@ -586,17 +658,28 @@ export default class Table extends spocky.Module
                 evt.stopPropagation();
 
                 let val = !this.l.$fields.table.rows(keys[0]).selected;
+                let row = this._rows_Current[keys[0]];
 
-                this._rows_Current[keys[0]].selected = val;
+                if (this._listeners_OnRowSelected) {
+                    if (!this._listeners_OnRowSelected(val, row, this.columnRefs, 
+                            keys[0]))
+                        return;
+                }
+
+                row.selected = val;
                 this.l.$fields.table.rows(keys[0]).selected = val;
                         
                 if (!val)
                     this.l.$elems.selectable_TableCheckbox.checked = false;
+
+                if (this._selectable_SelectedOnTop)
+                    this.refreshAllRows();
             });
         });
     }
 
     _createFields() {
+        this.l.$fields.table.selectable_ShowSelectAll = this._selectable_ShowSelectAll;
         this.l.$fields.table.trClass = '';
         this.l.$fields.text = (text) => {
             return spkTables.text(text);
@@ -693,6 +776,7 @@ export default class Table extends spocky.Module
             }
 
             let row = {
+                order: i,
                 href: null,
                 class: '',
                 cols: cols,
@@ -733,6 +817,13 @@ export default class Table extends spocky.Module
 
         let fRows = [];
         for (let i = 0; i < rows.length; i++) {
+            if (this._selectable_SelectedOnTop) {
+                if (rows[i].selected) {
+                    fRows.push(rows[i]);
+                    continue;
+                }
+            }
+
             for (let j = 0; j < rows[i].cols.length; j++) {
                 if (!this._info.columns[j].filter)
                     continue;
@@ -769,7 +860,17 @@ export default class Table extends spocky.Module
         let columnIndex = this._columnRefs[this._info.orderBy.columnName];
 
         rows = rows.sort((a, b) => {
-            let result = this._rows_Sort_Column(a, b, columnIndex,
+            let result = 0;
+            if (this._selectable_SelectedOnTop) {
+                if (a.selected && !b.selected)
+                    result = -1;
+                else if (!a.selected && b.selected)
+                    result = 1;
+            }
+            if (result !== 0)
+                return result;
+
+            result = this._rows_Sort_Column(a, b, columnIndex,
                     this._info.orderBy.reverse);
 
             if (result !== 0)
@@ -1102,7 +1203,7 @@ export default class Table extends spocky.Module
         } else {
             if (this._noSort) {
                 this._info.orderBy.columnName = null;
-                this._rows = rows_ApiResult;
+                this._rows = this._rows_NoSort(rows_ApiResult);
             } else
                 this._rows = this._rows_Sort(rows_ApiResult);
 
@@ -1112,6 +1213,23 @@ export default class Table extends spocky.Module
         return await this._rows_Update_Async(this._rows_Current, clearAll);
     }
 
+    _rows_NoSort(rows) {
+        return rows.sort((a, b) => {
+            if (this._selectable_SelectedOnTop) {
+                let result = 0;
+
+                if (a.selected && !b.selected)
+                    result = -1;
+                if (!a.selected && b.selected)
+                    result = 1;
+
+                if (result !== 0)
+                    return result;
+
+                return a.order - b.order;
+            }
+        });
+    }
 }
 
 Table.NotSet = Symbol('spkTables_NotSet');

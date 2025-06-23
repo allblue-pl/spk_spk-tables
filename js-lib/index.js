@@ -10,8 +10,7 @@ const
     $layouts = require('./$layouts')
 ;
 
-class spkTables_Class
-{
+class spkTables_Class {
 
     get Table() {
         return require('./Table');

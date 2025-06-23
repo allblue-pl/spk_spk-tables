@@ -38,8 +38,11 @@
     <table class="table">
         <thead>
             <tr class="header">
-                <th _elem="selectable_TableCheckboxHolder" _show="table.selectable">
-                    <input _elem="selectable_TableCheckbox" type="checkbox" />
+                <th _elem="selectable_TableCheckboxHolder"
+                        _show="table.selectable" class="text-center">
+                    <input _elem="selectable_TableCheckbox"  
+                            _show="table.selectable_ShowSelectAll"
+                            type="checkbox" />
                 </th>
                 <th _repeat="table.headers:header" _elem="header" _show="header.show" 
                         class="text-nowrap $header.class" style="$header.style">
@@ -52,7 +55,8 @@
         <tbody>
             <tr _repeat="table.rows:row" _elem="row" class="$table.trClass $row.class" 
                     style="$row.style">
-                <td _elem="selectable_RowCheckboxHolder" _show="table.selectable">
+                <td _elem="selectable_RowCheckboxHolder" _show="table.selectable"
+                        class="text-center">
                     <input _show="row.selected" type="checkbox" checked="true" />
                     <input _hide="row.selected" type="checkbox" />
                 </td>
