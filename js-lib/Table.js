@@ -159,7 +159,8 @@ export default class Table extends spocky.Module {
         let tableArgs = {};
 
         tableArgs.table = {
-            filter: this._filter.value,
+            filter: this._filter.value.substring(0, Math.min(
+                    this._filter.value.length, 128)),
             orderColumnName: this._info.orderBy.columnName,
             orderColumnDesc: this._info.orderBy.reverse,
         };
