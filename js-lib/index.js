@@ -2,6 +2,7 @@
 
 const
     abStrings = require('ab-strings'),
+    abText = require('ab-text'),
     js0 = require('js0'),
     spkMessages = require('spk-messages'),
     spocky = require('spocky'),
@@ -12,33 +13,19 @@ const
 
 class spkTables_Class {
 
+    get presets() {
+        return require('./presets.js');
+    }
+
     get Table() {
-        return require('./Table');
+        return require('./Table.js');
     }
 
 
     constructor()
     {
-        this._textFn = (text) => {
-            return this._texts[text];
-        };  
-        this._texts = {
-            Error: 'Error',
-        };
-    }
-
-    setTextFn(textFn)
-    {
-        js0.args(arguments, 'function');
-
-        this._textFn = textFn;
-    }
-
-    text(text)
-    {
-        js0.args(arguments, 'string');
-
-        return this._textFn(text);
+        abText.add('en.spkTables', require('./languages/en.spkTables.js'));
+        abText.add('pl.spkTables', require('./languages/pl.spkTables.js'));
     }
 
 }

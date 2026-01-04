@@ -2,13 +2,15 @@
 
 const
     abStrings = require('ab-strings'),
+    abText = require('ab-text'),
     js0 = require('js0'),
     spkMessages = require('spk-messages'),
     spocky = require('spocky'),
     webABApi = require('web-ab-api'),
 
-    $layouts = require('./$layouts'),
-    spkTables = require('.')
+    spkTables = require('.'),
+    presets = require('./presets.js'),
+    $layouts = require('./$layouts/index.js')
 ;
 
 export default class Table extends spocky.Module {
@@ -28,30 +30,7 @@ export default class Table extends spocky.Module {
         js0.args(arguments, spkMessages.Messages, js0.RawObject);
 
         tableInfo = js0.copyRawObject(tableInfo);
-
-        js0.typeE(tableInfo, js0.Preset({
-            columns: js0.Iterable(js0.Preset({
-                name: 'string',
-                refColumnName: [ 'string', js0.Null, 'symbol', js0.Default(Table.NotSet) ],
-                header: 'string',
-                class: [ 'string', js0.Default('') ],
-                style: [ 'string', js0.Default('') ],
-                textStyle: [ 'string', js0.Default('') ],
-                orderBy: [ js0.Preset({
-                    priority: [ 'number', js0.Default(0) ],
-                    reverse: [ 'boolean', js0.Default(false) ],
-                }), js0.Null, js0.Default(null) ],
-                filter: [ 'boolean', js0.Default(true), ],
-            })),
-            apiUri: [ 'string', js0.Null, js0.Default(null) ],
-            fn: [ 'function', js0.Null, js0.Default(null) ],
-            orderBy: js0.Preset({
-                columnName: [ 'string', js0.Null ],
-                reverse: [ 'boolean', js0.Default(false) ],
-            }),
-            hiddenColumnNames: [ js0.Iterable('string'), js0.Default([]) ],
-            showInstantLoading: [ 'boolean', js0.Default(false) ],
-        }));
+        js0.typeE(tableInfo, presets.tableInfo);
 
         for (let column of tableInfo.columns) {
             if (column.refColumnName === Table.NotSet)
@@ -163,6 +142,8 @@ export default class Table extends spocky.Module {
                     this._filter.value.length, 128)),
             orderColumnName: this._info.orderBy.columnName,
             orderColumnDesc: this._info.orderBy.reverse,
+            offset: null,
+            limit: null,
         };
 
         tableArgs.custom = this._getCustomFilterInfos();
@@ -173,7 +154,6 @@ export default class Table extends spocky.Module {
     getTableInfo() {
         return {
             columns: this._info.columns,
-            orderBy: this._info.orderBy,
         };
     }
 
@@ -205,7 +185,7 @@ export default class Table extends spocky.Module {
             .catch((e) => {
                 console.error(e);
 
-                this.msgs.showMessage_Failure(spkTables.text('Error'), 
+                this.msgs.showMessage_Failure(abText.$('spkTables.Error'), 
                         e.toString());
                 this.msgs.hideLoading();
             });
@@ -445,7 +425,7 @@ export default class Table extends spocky.Module {
             .catch((e) => {
                 console.error(e);
 
-                this.msgs.showMessage_Failure(spkTables.text('Error'), 
+                this.msgs.showMessage_Failure(abText.$('spkTables.Error'), 
                         e.toString());
                 this.msgs.hideLoading();
             });
@@ -518,7 +498,7 @@ export default class Table extends spocky.Module {
                             console.error(e);
 
                             this.msgs.showMessage_Failure(
-                                    spkTables.text('Error'), e.toString());
+                                    abText.$('spkTables.Error'), e.toString());
                             this.msgs.hideLoading();
                             console.error(e);
                         });
@@ -568,7 +548,7 @@ export default class Table extends spocky.Module {
                             console.error(e);
 
                             this.msgs.showMessage_Failure(
-                                    spkTables.text('Error'), e.toString());
+                                    abText.$('spkTables.Error'), e.toString());
                             this.msgs.hideLoading();
                         });
                 }
@@ -604,7 +584,7 @@ export default class Table extends spocky.Module {
                     .catch((e) => {
                         console.error(e);
 
-                        this.msgs.showMessage_Failure(spkTables.text('Error'), 
+                        this.msgs.showMessage_Failure(abText.$('spkTables.Error'), 
                                 e.toString());
                         this.msgs.hideLoading();
                     });
@@ -683,7 +663,7 @@ export default class Table extends spocky.Module {
         this.l.$fields.table.selectable_ShowSelectAll = this._selectable_ShowSelectAll;
         this.l.$fields.table.trClass = '';
         this.l.$fields.text = (text) => {
-            return spkTables.text(text);
+            return abText.$('spkTables.' + text);
         }
     }
 
@@ -705,10 +685,7 @@ export default class Table extends spocky.Module {
             tableArgs.table.limit = this._limit.current - (update ? this._rows_Current.length : 0);
         }
 
-        fields.tableInfo = {
-            columns: this._info.columns,
-            orderBy: this._info.orderBy,
-        };
+        fields.tableInfo = this.getTableInfo();
         fields.tableArgs = tableArgs;
 
         if (this._fns_ApiFields !== null) {
@@ -1121,6 +1098,8 @@ export default class Table extends spocky.Module {
         if (this._info.fn !== null) {
             this._info.fn(fields)
                 .then((result) => {
+                    js0.typeE(result, presets.refreshResult);
+
                     this._rows_RefreshQueueCount--;
                     if (this._rows_RefreshQueueCount > 0)
                         return;
@@ -1134,11 +1113,11 @@ export default class Table extends spocky.Module {
                                 console.error(e);
 
                                 this.msgs.showMessage_Failure(
-                                        spkTables.text('Error'), e.toString());
+                                        abText.$('spkTables.Error'), e.toString());
                                 this.msgs.hideLoading();
                             });
                     } else {
-                        this.msgs.showMessage_Failure(spkTables.text('Error'),
+                        this.msgs.showMessage_Failure(abText.$('spkTables.Error'),
                                 result.error);
                         this.msgs.hideLoading();
                     }
@@ -1147,7 +1126,7 @@ export default class Table extends spocky.Module {
                     console.error(e);
 
                     this.msgs.hideLoading();
-                    this.msgs.showMessage_Failure(spkTables.text('Error'),
+                    this.msgs.showMessage_Failure(abText.$('spkTables.Error'),
                             e.toString());
                 });
         } else if (this._info.apiUri !== null) {
@@ -1165,14 +1144,14 @@ export default class Table extends spocky.Module {
                             console.error(e);
 
                             this.msgs.showMessage_Failure(
-                                    spkTables.text('Error'), 
+                                    abText.$('spkTables.Error'), 
                                     e.toString());
                             this.msgs.hideLoading();
                         });
                 } else {
                     // this.rows_Update(this.rows);
     
-                    this.msgs.showMessage_Failure(spkTables.text('Error'),
+                    this.msgs.showMessage_Failure(abText.$('spkTables.Error'),
                             result.data.message);
                 }
     
