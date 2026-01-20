@@ -81,7 +81,7 @@ class presets_Class {
     js0.TPreset, () => {
         return js0.Preset({
             data: [ js0.Preset({
-                table: js0.ArrayItems(Array),
+                table: [ js0.ArrayItems(Array), js0.TNull, ],
             }, true), js0.Null ],
             error: [ 'string', js0.Null ],
         });
