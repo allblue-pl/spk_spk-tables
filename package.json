@@ -1,4 +1,6 @@
 {
   "name": "spk-tables",
-  "version": "0.0.1"
+  "type": "module",
+  "version": "0.0.1",
+  "main": "index.js"
 }

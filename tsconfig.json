@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "allowImportingTsExtensions": true,
+        "declaration": true,
+        "declarationDir": "./ts-types",
+        "erasableSyntaxOnly": true,
+        "module": "nodenext",
+        "noEmit": true,
+        "noImplicitOverride": true,
+        "outDir": ".",
+        "paths": {
+        },
+        "rewriteRelativeImportExtensions": true,
+        "rootDir": ".",
+        "strict": true,
+        "target": "esnext",
+        "typeRoots": [
+            "./node_modules/@types",
+            "node_modules/spocky/ts-types"
+        ],
+        "types": [
+            "spocky"
+        ],
+        "useDefineForClassFields": true,
+        "verbatimModuleSyntax": true
+    },
+    "exclude": [
+        "./lib/**/*",
+        "./ts-types/**/*",
+        "./tests/**/*"
+    ]
+}
