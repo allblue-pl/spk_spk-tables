@@ -772,6 +772,7 @@ export default class Table extends Module {
                     html: String(resultRows[i][j]),
                     button: {
                         show: false,
+                        href: "#",
                         btnClass: '',
                         iClass: '',
                         text: '',
@@ -1092,6 +1093,7 @@ export default class Table extends Module {
                 html: col.html,
                 button: {
                     btnClass: col.button.btnClass,
+                    href: col.button.href,
                     iClass: col.button.iClass,
                     show: col.button.show,
                     text: col.button.text,

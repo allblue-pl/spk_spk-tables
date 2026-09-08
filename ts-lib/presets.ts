@@ -29,9 +29,10 @@ export type TableColumn_Base = {
     class: string,
     show: boolean,
     value: TS0RawValue,
-    html: string,
+    html: string|null,
     button: {
         show: boolean,
+        href: string,
         btnClass: string,
         iClass: string,
         text: string,
@@ -50,6 +51,7 @@ export const presets_TableColumn = ts0.TPreset({
     html: "string",
     button: ts0.TPreset({
         show: "boolean",
+        href: "string",
         btnClass: "string",
         iClass: "string",
         text: "string",
