@@ -16,7 +16,9 @@
         "target": "esnext",
         "typeRoots": [
             "./node_modules/@types",
-            "node_modules/spocky/ts-types"
+            "./node_modules/spocky/ts-types",
+            "../@types",
+            "../spocky/ts-types"
         ],
         "types": [
             "spocky"
