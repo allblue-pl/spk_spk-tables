@@ -65,7 +65,26 @@
                         <$ _holder="colLayout" />
                     </$>
                     <$ _hide="col.hasLayout">
-                        <div class="row">
+                        <$ _show="col.button.show">
+                            <div class="row">
+                                <$ _show="row.href">
+                                    <a _show="col.html" href="$row.href" class="col-auto">
+                                        <span _field="col.html"></span>
+                                    </a>
+                                </$>
+                                <$ _hide="row.href">
+                                    <span _show="col.html" _field="col.html" class="col-auto" />
+                                </$>
+                                <div class="col $col.button.class">
+                                    <a _elem="columnButton" href="$col.button.href"
+                                        class="btn $col.button.btnClass w-100">
+                                        <i class="$col.button.iClass"></i>
+                                        $col.button.text
+                                    </a>
+                                </div>
+                            </div>
+                        </$>
+                        <$ _hide="col.button.show">
                             <$ _show="row.href">
                                 <a _show="col.html" href="$row.href" class="col-auto">
                                     <span _field="col.html"></span>
@@ -74,16 +93,7 @@
                             <$ _hide="row.href">
                                 <span _show="col.html" _field="col.html" class="col-auto" />
                             </$>
-                            <$ _show="col.button.show">
-                                <div class="col $col.button.class">
-                                    <a _elem="columnButton" href="$col.button.href"
-                                        class="btn $col.button.btnClass w-100">
-                                        <i class="$col.button.iClass"></i>
-                                        $col.button.text
-                                    </a>
-                                </div>
-                            </$>
-                        </div>
+                        </$>
                     </$>
                 </td>
             </tr>

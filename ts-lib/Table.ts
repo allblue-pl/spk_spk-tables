@@ -581,7 +581,7 @@ export default class Table extends Module {
     }
 
     #createElems_ColumnLayouts(): void {
-        this.#l.$holders.colLayout((holder: Holder, keys: Array<TS0RawValue>) => {
+        this.#l.$holders.colLayout((holder: Holder, keys: Array<number>) => {
             let row = this.#rows_Current[keys[0] as number];
             let col = row.cols[keys[1] as number];
 

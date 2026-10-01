@@ -10,8 +10,10 @@ import type { TableColumn, TableRow, TableRefreshFn, } from
         "./ts-lib/presets.ts";
 import { presets_ApiTableArgs, presets_ApiTableInfo, presets_TableColumnValue } from "spk-tables_presets";
 import type { TableArgs, TableColumnValue, TableInfo, TableRefreshResultData, TableRefreshResult } from "spk-tables_presets";
+import Table from "./ts-lib/Table.ts";
 
 export default spkTables;
+export { Table };
 export { presets_ApiTableArgs, presets_ApiTableInfo, presets_TableColumnValue,
         presets_TableRow };
 export type { ColRefs, };
