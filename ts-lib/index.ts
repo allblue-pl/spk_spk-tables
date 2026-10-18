@@ -1,8 +1,4 @@
-import abStrings from "ab-strings";
 import abText from "ab-text";
-import spkMessages from "spk-messages";
-import spocky from "spocky";
-import webABApi from "web-ab-api";
 
 import Table from "./Table.js";
 import lang_EN from "./languages/en.spkTables.ts";

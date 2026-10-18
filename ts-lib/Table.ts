@@ -3,9 +3,9 @@ import abText from "ab-text";
 import { Holder, Layout, Module } from "spocky";
 import webABApi from "web-ab-api";
 import type { Messages } from "spk-messages";
-import { type ColumnOrderInfo, type Fns_ApiFields, type Fns_CustomFilter, type Fns_RowHref, type Fns_RowsFilter, type Listeners_OnApiResult, type Listeners_OnClick, type Listeners_OnColumnButtonClick, type Listeners_OnRefresh, type Listeners_OnRowSelected, type Listeners_OnSearch, type Listeners_OnSort, type TableRefreshFn, type TableColumn, type TableColumn_Field, type TableRow, type TableRow_Field, presets_TableColumn } from "./presets.ts";
-import { presets_TableRefreshResult, presets_TableRefreshResultData, presets_TableInfo, presets_TableColumnValue, } from "spk-tables_presets"
-import type { TableRefreshResult, TableRefreshResultData, TableArgs, TableColumnValue, TableInfo, TableInfo_Column, TableInfo_Column_Parsed, TableInfo_Parsed, } from "spk-tables_presets";
+import { type ColumnOrderInfo, type Fns_ApiFields, type Fns_CustomFilter, type Fns_RowHref, type Fns_RowsFilter, type Listeners_OnApiResult, type Listeners_OnClick, type Listeners_OnColumnButtonClick, type Listeners_OnRefresh, type Listeners_OnRowSelected, type Listeners_OnSearch, type Listeners_OnSort, type TableRefreshFn, type TableColumn, type TableColumn_Field, type TableRow, type TableRow_Field } from "./presets.ts";
+import { presets_TableRefreshResult, presets_TableRefreshResultData, presets_TableInfo, presets_TableColumnValue, } from "spk-tables_presets";
+import type { TableRefreshResult, TableRefreshResultData, TableArgs, TableColumnValue, TableInfo, TableInfo_Column, TableInfo_Parsed } from "spk-tables_presets";
 import ts0, { ts0Assert, ts0Helper, type TS0NotSet, type TS0RawObject, type TS0RawValue } from "@allblue/ts0";
 import TableLayout from "../$layouts/TableLayout.ts";
 
@@ -272,7 +272,7 @@ export default class Table extends Module {
                     !hiddenColumnNames.includes(this.#columnNames[i]);
         }
 
-        for (let i = 0; i < this.#rows.length; i++) {
+        for (let i = 0; i < this.#rows_Current.length; i++) {
             for (let j = 0; j < this.#columnNames.length; j++) {
                 this.#l.$fields.table.rows(i).cols(j).show = 
                         !hiddenColumnNames.includes(this.#columnNames[j]);
@@ -585,9 +585,8 @@ export default class Table extends Module {
             let row = this.#rows_Current[keys[0] as number];
             let col = row.cols[keys[1] as number];
 
-            if (col.layout !== null) {
+            if (col.layout !== null)
                 holder.$view = col.layout;
-            }
         });
     }
 
